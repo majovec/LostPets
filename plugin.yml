@@ -1,15 +1,6 @@
 name: Pets
-main: LostTeam\Activator
+main: LostTeam\main
 version: 1.0.0
 api: [1.13.1, 2.0.0]
 description: ""
 author: "LostTeam"
-commands:
-    pet:
-        usage: "/pet <param>"
-        description: "Basic Pets Command"
-        permission: pets.cmd
-permissions:
-    pets.cmd:
-        default: true
-        description: ""

@@ -4,7 +4,3 @@
 ### Primary Test Server:
 #####Ip: FactionCraftPE.mcpe.me
 #####Port: 19132
-## FULL RE-WRITE COMING SOON
-Coming with this re-write, there will be no more reference to @thelucyclub 's early version of this plugin.
-<br>
-This plugin was based on @williamtdr 's LbCore plugin from the pets partition of it.

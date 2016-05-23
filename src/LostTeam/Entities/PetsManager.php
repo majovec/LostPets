@@ -10,10 +10,10 @@ use LostTeam\Pets;
 
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -38,20 +38,20 @@ class PetsManager implements Listener {
     public static function create($type, Position $source, ...$args) {
         $chunk = $source->getLevel()->getChunk($source->x >> 4, $source->z >> 4, true);
 
-        $nbt = new Compound("", [
-            "Pos" => new Enum("Pos", [
-                new Double("", $source->x),
-                new Double("", $source->y),
-                new Double("", $source->z)
+        $nbt = new CompoundTag("", [
+            "Pos" => new ListTag("Pos", [
+                new DoubleTag("", $source->x),
+                new DoubleTag("", $source->y),
+                new DoubleTag("", $source->z)
             ]),
-            "Motion" => new Enum("Motion", [
-                new Double("", 0),
-                new Double("", 0),
-                new Double("", 0)
+            "Motion" => new ListTag("Motion", [
+                new DoubleTag("", 0),
+                new DoubleTag("", 0),
+                new DoubleTag("", 0)
             ]),
-            "Rotation" => new Enum("Rotation", [
-                new Float("", $source instanceof Location ? $source->yaw : 0),
-                new Float("", $source instanceof Location ? $source->pitch : 0)
+            "Rotation" => new ListTag("Rotation", [
+                new FloatTag("", $source instanceof Location ? $source->yaw : 0),
+                new FloatTag("", $source instanceof Location ? $source->pitch : 0)
             ]),
         ]);
         return Entity::createEntity($type, $chunk, $nbt, $args);

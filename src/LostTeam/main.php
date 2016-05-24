@@ -2,6 +2,7 @@
 
 namespace LostTeam;
 
+use pocketmine\entity\Silverfish;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\DoubleTag;
@@ -35,6 +36,9 @@ class main extends PluginBase implements Listener {
 		Entity::registerEntity(PigPet::class);
 		Entity::registerEntity(BlazePet::class);
 		Entity::registerEntity(MagmaPet::class);
+		Entity::registerEntity(RabbitPet::class);
+		Entity::registerEntity(BatPet::class);
+		Entity::registerEntity(SilverfishPet::class);
 		//Entity::registerEntity(BlockPet::class);
 		//$server->getScheduler()->scheduleRepeatingTask(new task\PetsTick($this), 20*60);//run each minute for random pet messages
 		//$server->getScheduler()->scheduleRepeatingTask(new task\SpawnPetsTick($this), 20);
@@ -84,13 +88,19 @@ class main extends PluginBase implements Listener {
  				case "PigPet":
  				break;
  				case "BlazePet":
+ 				break;
+ 				case "MagmaPet";
+ 				break;
+				case "RabbitPet";
+					break;
+				case "BatPet";
+					break;
+				case "SilverfishPet";
+					break;
 
- 				break;
- 				case "MagmaPet":
- 				
- 				break;
+
  				default:
- 					$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet");
+ 					$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet" );
  					$type = $pets[rand(0, 3)];
  			}
 			$pet = $this->create($player,$type, $source);
@@ -146,10 +156,7 @@ class main extends PluginBase implements Listener {
 	
 	public function changePet(Player $player, $newtype){
 		$type = $newtype;
-		if (isset(self::$pet[$player->getName()])){
-			$this->getPet($player->getName())->close();
-			unset(self::$pet[$player->getName()]);
-		}
+		$this->disablePet($player);
 		self::$pet[$player->getName()] = $this->createPet($player, $newtype);
 	}
 	

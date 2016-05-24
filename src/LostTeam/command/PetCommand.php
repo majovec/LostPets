@@ -5,6 +5,7 @@ namespace LostTeam\command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use LostTeam\main;
+use pocketmine\utils\TextFormat as TF;
 
 class PetCommand extends PluginCommand {
 
@@ -33,6 +34,16 @@ class PetCommand extends PluginCommand {
 					$sender->sendMessage("Set Name to ".$name);
 				}
 				return true;
+			break;
+			case "help":
+				if($sender->hasPermission('pet.command.help')) {
+					$sender->sendMessage("§e=======PetHelp=======");
+					$sender->sendMessage("§b/pets = Spawn your pet");
+					$sender->sendMessage("§b/pets type [type]");
+					return true;
+				}else{
+					$sender->sendMessage(TF::RED . "You do not have permission to use this command");
+				}
 			break;
 			case "type":
 				if (isset($args[1])){
@@ -88,9 +99,39 @@ class PetCommand extends PluginCommand {
 								return true;
 							}
 							break;
+						case "rabbit":
+							if($sender->hasPermission("pets.type.rabbit")) {
+								$this->main->changePet($sender, "RabbitPet");
+								$sender->sendMessage("Changed Pet to Rabbit!");
+								return true;
+							}else{
+								$sender->sendMessage("You do not have permission for the rabbit pet!");
+								return true;
+							}
+						break;
+						case "bat":
+							if($sender->hasPermission("pets.type.bat")) {
+								$this->main->changePet($sender, "BatPet");
+								$sender->sendMessage("Changed Pet to Bat!");
+								return true;
+							}else{
+								$sender->sendMessage("You do not have permission for the bat pet!");
+								return true;
+							}
+							break;
+						case "silverfish":
+							if($sender->hasPermission("pets.type.silverfish")) {
+								$this->main->changePet($sender, "SilverFishPet");
+								$sender->sendMessage("Changed Pet to SilverFish!");
+								return true;
+							}else{
+								$sender->sendMessage("You do not have permission for the silverfish pet!");
+								return true;
+							}
+							break;
 						default:
 							$sender->sendMessage("/pet type [type]");
-							$sender->sendMessage("Types: blaze, pig, chicken, dog");
+							$sender->sendMessage("Types: blaze, pig, chicken, dog, rabbit, magma, bat, silverfish");
 						return true;
 					}
 				}

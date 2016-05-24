@@ -10,5 +10,5 @@
 #####Port: 19133
 
 # Disclaimer
- This plugin is fully re-written by LostTeam and GlitchPlayer (PHP 7 branch)
- This plugin was from WilliamTDR's Plugin "LBCore", and fully converted to standalone plugin.
+#####This plugin is fully re-written by LostTeam and GlitchPlayer (PHP 7 branch).
+#####This plugin was from WilliamTDR's Plugin "LBCore", and fully converted to standalone plugin.

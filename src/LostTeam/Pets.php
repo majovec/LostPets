@@ -33,7 +33,7 @@ abstract class Pets extends Creature {
 		if(!$this->closed ) {
 			if (!isset($this->hasSpawned[$player->getId()]) && isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
 				$pk = new AddEntityPacket();
-				$pk->eid = $this->getID();
+				$pk->eid = $this->getId();
 				$pk->type = static::NETWORK_ID;
 				$pk->x = $this->x;
 				$pk->y = $this->y;

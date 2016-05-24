@@ -3,7 +3,7 @@
 namespace pets\task;
 
 use pocketmine\scheduler\PluginTask;
-use pets\main;
+use LostTeam\main;
 
 /**
  * This task checks every 1 minute if player is need to get random pet message

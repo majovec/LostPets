@@ -1,8 +1,8 @@
 <?php
 
-namespace pets\task;
+namespace LostTeam\task;
 
-use Pets\Pets;
+use LostTeam\Pets;
 use LbCore\player\LbPlayer;
 use pocketmine\scheduler\PluginTask;
 

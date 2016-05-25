@@ -1,5 +1,6 @@
 <?php
 namespace LostTeam;
+
 class SilverfishPet extends Pets
 {
     const NETWORK_ID = 39;

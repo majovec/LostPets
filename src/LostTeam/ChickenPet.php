@@ -1,5 +1,4 @@
 <?php
-
 namespace LostTeam;
 
 class ChickenPet extends Pets {

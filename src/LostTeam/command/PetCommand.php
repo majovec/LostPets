@@ -1,10 +1,10 @@
 <?php
-
 namespace LostTeam\command;
+
+use LostTeam\main;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
-use LostTeam\main;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat as TF;
 

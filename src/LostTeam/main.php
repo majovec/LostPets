@@ -1,12 +1,12 @@
 <?php
-
 namespace LostTeam;
 
-use pocketmine\entity\Silverfish;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -16,13 +16,12 @@ use pocketmine\Server;
 use LostTeam\command\PetCommand;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Player;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\math\Vector3;
+use pocketmine\utils\TextFormat as TF;
 
 class main extends PluginBase implements Listener {
 
 	public static $pet;
+	public $pets;
 	public static $petState;
 	public $petType;
 	public $wishPet;
@@ -47,30 +46,31 @@ class main extends PluginBase implements Listener {
 
 	public function create($player,$type, Position $source, ...$args) {
 		$chunk = $source->getLevel()->getChunk($source->x >> 4, $source->z >> 4, true);
-		$nbt = new CompoundTag("", [
-			"Pos" => new ListTag("Pos", [
-				new DoubleTag("", $source->x),
-				new DoubleTag("", $source->y),
-				new DoubleTag("", $source->z)
+		$nbt = new Compound("", [
+			"Pos" => new Compound("Pos", [
+				new Double("", $source->x),
+				new Double("", $source->y),
+				new Double("", $source->z)
 					]),
-			"Motion" => new ListTag("Motion", [
-				new DoubleTag("", 0),
-				new DoubleTag("", 0),
-				new DoubleTag("", 0)
+			"Motion" => new Compound("Motion", [
+				new Double("", 0),
+				new Double("", 0),
+				new Double("", 0)
 					]),
-			"Rotation" => new ListTag("Rotation", [
-				new FloatTag("", $source instanceof Location ? $source->yaw : 0),
-				new FloatTag("", $source instanceof Location ? $source->pitch : 0)
+			"Rotation" => new Compound("Rotation", [
+				new Float("", $source instanceof Location ? $source->yaw : 0),
+				new Float("", $source instanceof Location ? $source->pitch : 0)
 					]),
 		]);
 		$pet = Entity::createEntity($type, $chunk, $nbt, ...$args);
+		if($pet instanceof Pets);
 		$pet->setOwner($player);
 		$pet->spawnToAll();
 		return $pet; 
 	}
 
-	public function createPet(Player $player, $type, $holdType = "") {
- 		if (isset($this->pet[$player->getName()]) != true) {
+	public function createPet(Player $player, $type) {
+ 		if (isset($this->pets[$player->getName()]) != true) {
 			$len = rand(8, 12); 
 			$x = (-sin(deg2rad($player->yaw))) * $len  + $player->getX();
 			$z = cos(deg2rad($player->yaw)) * $len  + $player->getZ();
@@ -97,20 +97,20 @@ class main extends PluginBase implements Listener {
 					break;
 				case "SilverfishPet";
 					break;
-
-
  				default:
- 					$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet" );
- 					$type = $pets[rand(0, 3)];
+ 					$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "MagmaPet");
+ 					$type = $pets[rand(0, count($pets)-1)];
  			}
 			$pet = $this->create($player,$type, $source);
 			return $pet;
  		}
+		$player->sendMessage(TF::RED."You can only have one pet! This may be a glitch...");
+		return null;
 	}
 
 	public function onPlayerQuit(PlayerQuitEvent $event) {
 		$player = $event->getPlayer();
-		$pet = $player->getPet();
+		$pet = $this->getPet($player);
 		if (!is_null($pet)) {
 			$this->disablePet($player);
 		}
@@ -126,25 +126,30 @@ class main extends PluginBase implements Listener {
 		$attackerEvent = $player->getLastDamageCause();
 		if ($attackerEvent instanceof EntityDamageByEntityEvent) {
 			$attacker = $attackerEvent->getDamager();
-			if ($attacker instanceof Player) {
-				$player->setLastDamager($attacker->getName());
+			if (isset(self::$pet[$player->getName()])) {
+				self::$pet[$player->getName()]->setLastDamager($attacker->getName());
+				unset(self::$pet[$player->getName()]);
+				$player->sendMessage("Pet Disappeared because you died!");
+				return;
 			}
 		}
 	}
 
-	//new Pets API By BalAnce cause LIFEBOAT's WAS SHIT!
-	//still probably buggy idk worked fine for me
-	
+	public function onPlayerJoin(PlayerJoinEvent $event) {
+		$player = $event->getPlayer();
+		self::$pet[$player->getName()] = $this->createPet($player, "");
+	}
+
 	public function togglePet(Player $player){
 		if (isset(self::$pet[$player->getName()])){
-			self::$pet[$player->getName()]->close();
+			self::$pet[$player->getName()]->fastClose();
 			unset(self::$pet[$player->getName()]);
-			$player->sendMessage("Pet Disapeared");
+			$player->sendMessage("Pet Disappeared");
 				
 			return;
 		}
 		self::$pet[$player->getName()] = $this->createPet($player, "");
-		$player->sendMessage("Enabled Pet!");
+		$player->sendMessage("Pet Created!");
 	}
 	
 	public function disablePet(Player $player){
@@ -155,7 +160,6 @@ class main extends PluginBase implements Listener {
 	}
 	
 	public function changePet(Player $player, $newtype){
-		$type = $newtype;
 		$this->disablePet($player);
 		self::$pet[$player->getName()] = $this->createPet($player, $newtype);
 	}
@@ -163,23 +167,4 @@ class main extends PluginBase implements Listener {
 	public function getPet($player) {
 		return self::$pet[$player];
 	}
-	
-// 	public function getPetState($player){
-// 		if(isset(self::$petState[$player]['state'])) {
-// 			if(self::$petState[$player]['delay'] > 0){
-// 				self::$petState[$player]['delay']--;
-// 				return false;
-// 			}
-// 			return self::$petState[$player];
-// 		}
-// 		return false;
-// 	}
-	
-// 	public static function setPetState($state,$player, $petType = "", $delay = 2) {
-// 		self::$petState[$player] = array(
-// 				'state' => $state,
-// 				'petType' => $petType,
-// 				'delay' => $delay
-// 		);
-// 	}
 }

@@ -1,10 +1,8 @@
 <?php
-
 namespace LostTeam;
 
 use pocketmine\entity\Creature;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\Timings;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -12,14 +10,14 @@ use pocketmine\math\Vector3;
 use pocketmine\math\Math;
 use pocketmine\block\Air;
 use pocketmine\block\Liquid;
-use pocketmine\utils\TextFormat;
-use LostTeam\main;
+use pocketmine\utils\TextFormat as TF;
 
 abstract class Pets extends Creature {
 
 	protected $owner = null;
 	protected $distanceToOwner = 0;
 	public $closeTarget = null;
+	public $attacker = null;
 
 	public function saveNBT() {
 		
@@ -31,7 +29,7 @@ abstract class Pets extends Creature {
 
 	public function spawnTo(Player $player) {
 		if(!$this->closed ) {
-			if (!isset($this->hasSpawned[$player->getId()]) && isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
+			if (!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
 				$pk = new AddEntityPacket();
 				$pk->eid = $this->getId();
 				$pk->type = static::NETWORK_ID;
@@ -59,7 +57,7 @@ abstract class Pets extends Creature {
 
 	public function updateMovement() {
 		if (
-				$this->lastX !== $this->x || $this->lastY !== $this->y || $this->lastZ !== $this->z || $this->lastYaw !== $this->yaw || $this->lastPitch !== $this->pitch
+				$this->lastX !== $this->x or $this->lastY !== $this->y or $this->lastZ !== $this->z or $this->lastYaw !== $this->yaw or $this->lastPitch !== $this->pitch
 		) {
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
@@ -119,9 +117,9 @@ abstract class Pets extends Creature {
 		$newX = Math::floorFloat($this->x + $dx);
 		$newZ = Math::floorFloat($this->z + $dz);
 		$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y), $newZ));
-		if (!($block instanceof Air) && !($block instanceof Liquid)) {
+		if (!($block instanceof Air) and !($block instanceof Liquid)) {
 			$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y + 1), $newZ));
-			if (!($block instanceof Air) && !($block instanceof Liquid)) {
+			if (!($block instanceof Air) and !($block instanceof Liquid)) {
 				$this->motionY = 0;
 				if(is_null($this->closeTarget)) {
 					$this->returnToOwner();
@@ -136,7 +134,7 @@ abstract class Pets extends Creature {
 			}
 		} else {
 			$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y - 1), $newZ));
-			if (!($block instanceof Air) && !($block instanceof Liquid)) {
+			if (!($block instanceof Air) and !($block instanceof Liquid)) {
 				$blockY = Math::floorFloat($this->y);
 				if ($this->y - $this->gravity * 4 > $blockY) {
 					$this->motionY = -$this->gravity * 4;
@@ -153,7 +151,7 @@ abstract class Pets extends Creature {
 	}
 
 	public function onUpdate($currentTick) {
-		if(!($this->owner instanceof Player) || $this->owner->closed) {
+		if(!($this->owner instanceof Player) or $this->owner->closed) {
 			$this->fastClose();
 			return false;
 		}
@@ -162,7 +160,7 @@ abstract class Pets extends Creature {
 		}
 		$tickDiff = $currentTick - $this->lastUpdate;
 		$this->lastUpdate = $currentTick;
-		if (is_null($this->closeTarget) && $this->distance($this->owner) > 40) {
+		if (is_null($this->closeTarget) and $this->distance($this->owner) > 40) {
 			$this->returnToOwner();
 		}
 		$this->entityBaseTick($tickDiff);
@@ -187,7 +185,7 @@ abstract class Pets extends Creature {
 
 
 	public function close(){
-		if(!($this->owner instanceof Player) || $this->owner->closed) {
+		if(!($this->owner instanceof Player) or $this->owner->closed) {
 			$this->fastClose();
 			return;
 		}
@@ -204,6 +202,15 @@ abstract class Pets extends Creature {
 		}
 	}
 
+	public function setLastDamager($player) {
+		if (isset(main::$pet[$this->owner->getName()])) {
+			$this->attacker = $player;
+		}
+	}
+
+	public function getLastDamager() {
+		return $this->attacker;
+	}
 	
 	/**
 	 * Return interval from started to current time in minutes

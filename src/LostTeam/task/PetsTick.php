@@ -3,7 +3,6 @@
 namespace LostTeam\task;
 
 use LostTeam\Pets;
-use LbCore\player\LbPlayer;
 use pocketmine\scheduler\PluginTask;
 
 /**
@@ -13,7 +12,7 @@ class PetsTick extends PluginTask {
 	
 	/**
 	 * Base class constructor
-	 * @param Plugin $plugin
+	 * @param $plugin
 	 */
 	public function __construct($plugin) {
 		parent::__construct($plugin);
@@ -25,7 +24,7 @@ class PetsTick extends PluginTask {
 	 * @param int $currentTick
 	 */
 	public function onRun($currentTick) {
-		$onlinePlayers = \pocketmine\Server::getInstance()->getOnlinePlayers();
+//		$onlinePlayers = \pocketmine\Server::getInstance()->getOnlinePlayers();
 // 		foreach ($onlinePlayers as $player) {
 // 			if (self::needPetMessage($player)) {
 // 				Pets::sendPetMessage($player, Pets::PET_LOBBY_RANDOM);

@@ -29,7 +29,7 @@ class main extends PluginBase implements Listener {
 	public static $type;
 	public function onEnable() {
 		$server = Server::getInstance();
-		$server->getCommandMap()->register('pets', new PetCommand($this, "pets"));
+		$server->getCommandMap()->register('pets', new PetCommand($this));
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
 		Entity::registerEntity(PigPet::class);

@@ -15,9 +15,9 @@ class PetCommand extends PluginCommand {
 	/**
 	 * PetCommand constructor.
 	 * @param Main $main
-	 * @param Plugin $name
+	 * @param $name
      */
-	public function __construct(Main $main, Plugin $name) {
+	public function __construct(Main $main, $name) {
 		parent::__construct($name, $main);
 		$this->main = $main;
 		$this->setPermission("pet.command");

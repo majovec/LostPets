@@ -255,5 +255,4 @@ abstract class Pets extends Creature {
 	public static function getTimeInterval($started) {
 		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
-
 }

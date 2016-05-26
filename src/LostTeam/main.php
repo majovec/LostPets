@@ -177,20 +177,23 @@ class Main extends PluginBase implements Listener {
 		return $pet;
 	}
 
-	public function createPet(Player $player) {
-		if (isset($this->pets[$player->getName()]) != true) {
+	public function createPet(Player $player, $type = null) {
+		if (!isset($this->pets[$player->getName()])) {
+			$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "MagmaPet", "OcelotPet");
 			$len = rand(8, 12);
 			$x = (-sin(deg2rad($player->yaw))) * $len  + $player->getX();
 			$z = cos(deg2rad($player->yaw)) * $len  + $player->getZ();
 			$y = $player->getLevel()->getHighestBlockAt($x, $z);
 
 			$source = new Position($x , $y + 2, $z, $player->getLevel());
-			if (isset(self::$type[$player->getName()])) {
-				$type = self::$type[$player->getName()];
-			}else{
-				$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "MagmaPet", "OcelotPet");
-				$type = $pets[rand(0, count($pets)-1)];
-				$this->current[$player->getName()] = $type;
+			if (!isset($type)) {
+				$this->current[$player->getName()] = rand(0, count($pets)-1);
+				$type = $pets[$this->current[$player->getName()]];
+			}
+			for($n = 0; $n != 9; $n+=1) {
+				if($type === $pets[$n]) {
+					$this->current[$player->getName()] = $n;
+				}
 			}
 			$pet = $this->create($player,$type, $source);
 			return $pet;
@@ -224,7 +227,7 @@ class Main extends PluginBase implements Listener {
 
 	public function onPlayerJoin(PlayerJoinEvent $event) {
 		$player = $event->getPlayer();
-		$this->getServer()->getCommandMap()->dispatch($player, "pet cycle");
+		$this->getServer()->getCommandMap()->dispatch($player, "/pet cycle");
 	}
 
 	public function togglePet(Player $player) {
@@ -233,7 +236,7 @@ class Main extends PluginBase implements Listener {
 			self::$pet[$player->getName()] = null;
 			return;
 		}
-		self::$pet[$player->getName()] = $this->createPet($player, "WolfPet");
+		self::$pet[$player->getName()] = $this->createPet($player, self::$type[$player->getName()]);
 	}
 
 	public function disablePet(Player $player) {

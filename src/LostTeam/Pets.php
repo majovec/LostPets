@@ -85,6 +85,8 @@ abstract class Pets extends Creature {
 	}
 
 	public function updateMove() {
+		if($this->owner instanceof Player);
+		if($this->closeTarget instanceof Player);
 		if(is_null($this->closeTarget)) {
 			$x = $this->owner->x - $this->x;
 			$z = $this->owner->z - $this->z;
@@ -171,6 +173,7 @@ abstract class Pets extends Creature {
 	}
 
 	public function returnToOwner() {
+		if($this->owner instanceof Player);
 		$len = rand(2, 6);
 		$x = (-sin(deg2rad( $this->owner->yaw))) * $len  +  $this->owner->getX();
 		$z = cos(deg2rad( $this->owner->yaw)) * $len  +  $this->owner->getZ();
@@ -196,20 +199,69 @@ abstract class Pets extends Creature {
 // 			$this->closeTarget = new Vector3($x, $this->owner->getY() + 1, $z);
 			$this->kill();
 		} else {
-			if (isset(main::$pet[$this->owner->getName()])) {
+			if (isset(Main::$pet[$this->owner->getName()])) {
 				$this->kill();
 			}
 		}
 	}
 
 	public function setLastDamager($player) {
-		if (isset(main::$pet[$this->owner->getName()])) {
+		if($this->owner instanceof Player);
+		if (isset(Main::$pet[$this->owner->getName()])) {
 			$this->attacker = $player;
 		}
 	}
 
 	public function getLastDamager() {
 		return $this->attacker;
+	}
+
+	public static function sendPetMessage(Player $player, $reason = "PET_WELCOME") {
+		//contains available language key strings
+		$availReasons = array(
+			"PET_WELCOME",
+			"PET_BYE",
+			"PET_RANDOM"
+		);
+		if (!empty($availReasons[$reason])) {
+			$message = 'quirk!';//default message if something went wrong
+			switch ($availReasons) {
+				case "PET_WELCOME":
+					$messages = array(
+						"",
+						"",
+						"",
+						""
+					);
+				break;
+				case "PET_BYE":
+					$messages = array(
+						"",
+						"",
+						"",
+						""
+					);
+				break;
+				case "PET_RANDOM": //neutral messages that can be said anytime
+					$messages = array(
+						"",
+						"",
+						"",
+						""
+					);
+				break;
+				default: //same as random messages
+					$messages = array(
+						"",
+						"",
+						"",
+						""
+					);
+				break;
+			}
+			$message = $messages[rand(0, count($messages) - 1)];
+			$player->sendMessage(self::getName() . TF::WHITE ." > " . $message);
+		}
 	}
 	
 	/**

@@ -4,3 +4,26 @@ version: 1.0.0
 api: [1.13.1, 2.0.0]
 description: "Pets for PocketMine!"
 author: "LostTeam"
+commands:
+  pet:
+    usage: "/pet <SubCommand>"
+    description: ""
+    permission: pet.command
+  pets:
+    useage: "/pets <SubCommand>"
+    description: ""
+    permission: pet.command
+permissions:
+  pet.command:
+    default: true
+    description: ""
+    children:
+      pet.command.help:
+        default: true
+        description: ""
+      pet.command.name:
+        default: true
+        description: ""
+      pet.command.cycle:
+        default: true
+        description: ""

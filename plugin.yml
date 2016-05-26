@@ -6,22 +6,14 @@ description: ""
 author: "LostTeam"
 
 Permissions:
-  pets.command.*:
-    default: op
+  pets.command:
+    default: true
     children:
       pets.command.list:
         default: true
       pets.command.help:
         default: true
-  pets.type.*:
-    default: op
-    children:
-      pets.type.dog
-      pets.type.chicken
-      pets.type.ocelot
-      pets.type.pig
-      pets.type.magma
-      pets.type.rabbit
-      pets.type.bat
-      pet.type.silverfish
-      pets.type.blaze
+      pets.command.cycle:
+        default: true
+      pets.command.clear:
+        default: op

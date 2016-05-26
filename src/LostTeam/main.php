@@ -1,24 +1,23 @@
 <?php
-
 namespace LostTeam;
 
-use pocketmine\entity\Silverfish;
-use pocketmine\level\Location;
-use pocketmine\level\Position;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
+use LostTeam\command\PetCommand;
+
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\Server;
-use LostTeam\command\PetCommand;
-use pocketmine\plugin\PluginBase;
-use pocketmine\Player;
+use pocketmine\level\Location;
+use pocketmine\level\Position;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
+use pocketmine\plugin\PluginBase;
+use pocketmine\Server;
 
 class main extends PluginBase implements Listener {
 
@@ -28,9 +27,10 @@ class main extends PluginBase implements Listener {
 	public $wishPet;
 	public static $isPetChanging;
 	public static $type;
+
 	public function onEnable() {
 		$server = Server::getInstance();
-		$server->getCommandMap()->register('pets', new PetCommand($this, "pets"));
+		$server->getCommandMap()->register('Pets', new PetCommand($this, "pets"));
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
 		Entity::registerEntity(PigPet::class);
@@ -41,12 +41,11 @@ class main extends PluginBase implements Listener {
 		Entity::registerEntity(SilverfishPet::class);
 		Entity::registerEntity(OcelotPet::class);
 		//Entity::registerEntity(BlockPet::class);
-		//$server->getScheduler()->scheduleRepeatingTask(new task\PetsTick($this), 20*60);//run each minute for random pet messages
-		//$server->getScheduler()->scheduleRepeatingTask(new task\SpawnPetsTick($this), 20);
+		//$server->getScheduler()->scheduleRepeatingTask(new task\PetsTick($this), 20*60); //run each minute for random pet messages
 		
 	}
 
-	public function create($player,$type, Position $source, ...$args) {
+	public function create(Player $player,$type, Position $source, ...$args) {
 		$chunk = $source->getLevel()->getChunk($source->x >> 4, $source->z >> 4, true);
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
@@ -65,12 +64,14 @@ class main extends PluginBase implements Listener {
 					]),
 		]);
 		$pet = Entity::createEntity($type, $chunk, $nbt, ...$args);
-		$pet->setOwner($player);
-		$pet->spawnToAll();
+		if(!is_null($pet)) {
+			$pet->setOwner($player);
+			$pet->spawnToAll();
+		}
 		return $pet; 
 	}
 
-	public function createPet(Player $player, $type, $holdType = "") {
+	public function createPet(Player $player, $type) {
  		if (isset($this->pet[$player->getName()]) != true) {
 			$len = rand(8, 12); 
 			$x = (-sin(deg2rad($player->yaw))) * $len  + $player->getX();
@@ -81,32 +82,9 @@ class main extends PluginBase implements Listener {
 			if (isset(self::$type[$player->getName()])){
 				$type = self::$type[$player->getName()];
 			}
- 			switch ($type){
- 				case "WolfPet":
- 				break;
- 				case "ChickenPet":
- 				break;
- 				case "PigPet":
- 				break;
- 				case "BlazePet":
- 				break;
- 				case "MagmaPet";
- 				break;
-				case "RabbitPet";
-					break;
-				case "BatPet";
-					break;
-				case "SilverfishPet";
-					break;
-				case "OcelotPet";
-					break;
-
-
- 				default:
- 					$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "OcelotPet");
- 					$type = $pets[rand(0, 3)];
- 			}
-			$pet = $this->create($player,$type, $source);
+			$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "OcelotPet");
+ 			$type = $pets[rand(0, 3)];
+ 			$pet = $this->create($player,$type, $source);
 			return $pet;
  		}
 	}
@@ -118,26 +96,21 @@ class main extends PluginBase implements Listener {
 			$this->disablePet($player);
 		}
 	}
-	
-	/**
-	 * Get last damager name if it's another player
-	 * 
-	 * @param PlayerDeathEvent $event
-	 */
-	public function onPlayerDeath(PlayerDeathEvent $event) {
-		$player = $event->getEntity();
-		$attackerEvent = $player->getLastDamageCause();
+
+	public function onEntityDeath(EntityDeathEvent $event) {
+		$entity = $event->getEntity();
+		$attackerEvent = $entity->getLastDamageCause();
+		if(!$entity instanceof Player and $entity instanceof Pets) {
+			$this->disablePet($this->getOwner());
+		}
 		if ($attackerEvent instanceof EntityDamageByEntityEvent) {
 			$attacker = $attackerEvent->getDamager();
 			if ($attacker instanceof Player) {
-				$player->setLastDamager($attacker->getName());
+				$entity->setLastDamager($attacker->getName());
 			}
 		}
 	}
 
-	//new Pets API By BalAnce cause LIFEBOAT's WAS SHIT!
-	//still probably buggy idk worked fine for me
-	
 	public function togglePet(Player $player){
 		if (isset(self::$pet[$player->getName()])){
 			self::$pet[$player->getName()]->close();
@@ -150,39 +123,19 @@ class main extends PluginBase implements Listener {
 		$player->sendMessage("Enabled Pet!");
 	}
 	
-	public function disablePet(Player $player){
+	public function disablePet(Player $player) {
 		if (isset(self::$pet[$player->getName()])){
-			self::$pet[$player->getName()]->fastClose();
-			unset(self::$pet[$player->getName()]);
+			self::$pet[$player->getName()]->close();
+			self::$pet[$player->getName()] = null;
 		}
 	}
 	
-	public function changePet(Player $player, $newtype){
-		$type = $newtype;
+	public function changePet(Player $player, $type){
 		$this->disablePet($player);
-		self::$pet[$player->getName()] = $this->createPet($player, $newtype);
+		self::$pet[$player->getName()] = $this->createPet($player, $type);
 	}
 	
 	public function getPet($player) {
 		return self::$pet[$player];
 	}
-	
-// 	public function getPetState($player){
-// 		if(isset(self::$petState[$player]['state'])) {
-// 			if(self::$petState[$player]['delay'] > 0){
-// 				self::$petState[$player]['delay']--;
-// 				return false;
-// 			}
-// 			return self::$petState[$player];
-// 		}
-// 		return false;
-// 	}
-	
-// 	public static function setPetState($state,$player, $petType = "", $delay = 2) {
-// 		self::$petState[$player] = array(
-// 				'state' => $state,
-// 				'petType' => $petType,
-// 				'delay' => $delay
-// 		);
-// 	}
 }

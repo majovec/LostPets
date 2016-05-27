@@ -46,9 +46,11 @@ class Main extends PluginBase implements Listener {
 			if (!isset($args[0])) {
 				if($sender->hasPermission('pet.command.help')) {
 					$sender->sendMessage(TF::YELLOW."=======".TF::BLUE."Pets".TF::YELLOW."=======");
-					$sender->sendMessage(TF::YELLOW."/pets ");
+					$sender->sendMessage(TF::YELLOW."/pets help");
 					$sender->sendMessage(TF::YELLOW."/pets cycle");
 					$sender->sendMessage(TF::YELLOW."/pets name <Pet Name>");
+					$sender->sendMessage(TF::YELLOW."/pets list");
+					$sender->sendMessage(TF::YELLOW."/pets clear");
 					return true;
 				}else{
 					$sender->sendMessage(TF::RED . "You do not have permission to use this command");
@@ -76,6 +78,8 @@ class Main extends PluginBase implements Listener {
 					$sender->sendMessage(TF::YELLOW."/pets help");
 					$sender->sendMessage(TF::YELLOW."/pets cycle");
 					$sender->sendMessage(TF::YELLOW."/pets name <Pet Name>");
+					$sender->sendMessage(TF::YELLOW."/pets list");
+					$sender->sendMessage(TF::YELLOW."/pets clear");
 					break;
 				case "cycle":
 					if(!$sender->hasPermission('pet.command.cycle')) {
@@ -91,12 +95,47 @@ class Main extends PluginBase implements Listener {
 					}
 					$this->changePet($sender, $types[$new]);
 					break;
+				case "list":
+					if(!$sender->hasPermission('pet.command.help')) {
+						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
+						return true;
+					}
+					$sender->sendMessage(TF::YELLOW."=======".TF::BLUE."Pets List".TF::YELLOW."=======");
+					$n = null;
+					foreach($this->getServer()->getLevels() as $level) {
+						foreach($level->getEntities() as $entity) {
+							if($entity instanceof Pets) {
+								if($entity->getName() !== null) {
+									$sender->sendMessage($entity->getName());
+								}else {
+									$sender->sendMessage("Un-Named Pet");
+								}
+								$n+=1;
+							}
+						}
+					}
+					$sender->sendMessage(TF::YELLOW."Total Pet Count is ".TF::BLUE.TF::BOLD.$n);
+					break;
+				case "clear":
+					$n = null;
+					foreach($this->getServer()->getLevels() as $level) {
+						foreach($level->getEntities() as $entity) {
+							if($entity instanceof Pets) {
+								$entity->close();
+								$n+=1;
+							}
+						}
+					}
+					$sender->sendMessage(TF::YELLOW."Total Cleared Pets are ".TF::BLUE.TF::BOLD.$n." Pets");
+					break;
 				default:
 					if($sender->hasPermission('pet.command')) {
 						$sender->sendMessage(TF::YELLOW."=======".TF::BLUE."Pets".TF::YELLOW."=======");
-						$sender->sendMessage(TF::YELLOW."/pets ");
+						$sender->sendMessage(TF::YELLOW."/pets help");
 						$sender->sendMessage(TF::YELLOW."/pets cycle");
 						$sender->sendMessage(TF::YELLOW."/pets name <Pet Name>");
+						$sender->sendMessage(TF::YELLOW."/pets list");
+						$sender->sendMessage(TF::YELLOW."/pets clear");
 						return true;
 					}else{
 						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
@@ -138,7 +177,7 @@ class Main extends PluginBase implements Listener {
 		return $pet;
 	}
 
-	public function createPet(Player $player, $type) {
+	public function createPet(Player $player) {
 		if (isset($this->pets[$player->getName()]) != true) {
 			$len = rand(8, 12);
 			$x = (-sin(deg2rad($player->yaw))) * $len  + $player->getX();
@@ -194,7 +233,7 @@ class Main extends PluginBase implements Listener {
 			unset(self::$pet[$player->getName()]);
 			return;
 		}
-		self::$pet[$player->getName()] = $this->createPet($player, "WolfPet");
+		self::$pet[$player->getName()] = $this->createPet($player);
 	}
 
 	public function disablePet(Player $player) {

@@ -1,5 +1,6 @@
 <?php
 namespace LostTeam;
+
 class BatPet extends Pets {
     const NETWORK_ID = 19;
     public $width = 0.6;

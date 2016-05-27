@@ -1,5 +1,4 @@
 <?php
-
 namespace LostTeam;
 
 class BlazePet extends Pets {

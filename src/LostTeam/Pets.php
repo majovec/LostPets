@@ -1,10 +1,8 @@
 <?php
-
 namespace LostTeam;
 
 use pocketmine\entity\Creature;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\Timings;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -12,26 +10,32 @@ use pocketmine\math\Vector3;
 use pocketmine\math\Math;
 use pocketmine\block\Air;
 use pocketmine\block\Liquid;
-use pocketmine\utils\TextFormat;
-use LostTeam\main;
+use pocketmine\utils\TextFormat as TF;
 
 abstract class Pets extends Creature {
 
 	protected $owner = null;
 	protected $distanceToOwner = 0;
 	public $closeTarget = null;
+	public $attacker = null;
+	public $speed;
 
 	public function saveNBT() {
-		
+
 	}
 
 	public function setOwner(Player $player) {
 		$this->owner = $player;
 	}
 
+	public function getOwner() {
+		if($this->owner instanceof Player);
+		return $this->owner;
+	}
+
 	public function spawnTo(Player $player) {
 		if(!$this->closed ) {
-			if (!isset($this->hasSpawned[$player->getId()]) && isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
+			if (!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
 				$pk = new AddEntityPacket();
 				$pk->eid = $this->getId();
 				$pk->type = static::NETWORK_ID;
@@ -44,10 +48,10 @@ abstract class Pets extends Creature {
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
 				$pk->metadata = $this->dataProperties;
-				if (static::NETWORK_ID == 66){
+				if (static::NETWORK_ID == 66) {
 					$pk->metadata = [
-							15 => [0,1],
-							20 => [2,86]
+						15 => [0,1],
+						20 => [2,86]
 					];
 					$pk->y = $this->y + 0.6;
 				}
@@ -59,7 +63,7 @@ abstract class Pets extends Creature {
 
 	public function updateMovement() {
 		if (
-				$this->lastX !== $this->x || $this->lastY !== $this->y || $this->lastZ !== $this->z || $this->lastYaw !== $this->yaw || $this->lastPitch !== $this->pitch
+			$this->lastX !== $this->x or $this->lastY !== $this->y or $this->lastZ !== $this->z or $this->lastYaw !== $this->yaw or $this->lastPitch !== $this->pitch
 		) {
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
@@ -71,22 +75,24 @@ abstract class Pets extends Creature {
 	}
 
 	public function attack($damage, EntityDamageEvent $source) {
-		
+
 	}
 
 	public function move($dx, $dy, $dz) {
 		$this->boundingBox->offset($dx, 0, 0);
 		$this->boundingBox->offset(0, 0, $dz);
 		$this->boundingBox->offset(0, $dy, 0);
-		$this->setComponents($this->x + $dx, $this->y + $dy, $this->z + $dz);		
+		$this->setComponents($this->x + $dx, $this->y + $dy, $this->z + $dz);
 		return true;
 	}
 
 	public function getSpeed() {
-		return 1;
+		return $this->speed[$this->getOwner()];
 	}
 
 	public function updateMove() {
+		if($this->owner instanceof Player);
+		if($this->closeTarget instanceof Player);
 		if(is_null($this->closeTarget)) {
 			$x = $this->owner->x - $this->x;
 			$z = $this->owner->z - $this->z;
@@ -119,16 +125,16 @@ abstract class Pets extends Creature {
 		$newX = Math::floorFloat($this->x + $dx);
 		$newZ = Math::floorFloat($this->z + $dz);
 		$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y), $newZ));
-		if (!($block instanceof Air) && !($block instanceof Liquid)) {
+		if (!($block instanceof Air) and !($block instanceof Liquid)) {
 			$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y + 1), $newZ));
-			if (!($block instanceof Air) && !($block instanceof Liquid)) {
+			if (!($block instanceof Air) and !($block instanceof Liquid)) {
 				$this->motionY = 0;
 				if(is_null($this->closeTarget)) {
 					$this->returnToOwner();
 					return;
 				}
 			} else {
-				if (!$block->canBeFlowedInto) {
+				if (!$block->canBeFlowedInto()) {
 					$this->motionY = 1.1;
 				} else {
 					$this->motionY = 0;
@@ -136,7 +142,7 @@ abstract class Pets extends Creature {
 			}
 		} else {
 			$block = $this->level->getBlock(new Vector3($newX, Math::floorFloat($this->y - 1), $newZ));
-			if (!($block instanceof Air) && !($block instanceof Liquid)) {
+			if (!($block instanceof Air) and !($block instanceof Liquid)) {
 				$blockY = Math::floorFloat($this->y);
 				if ($this->y - $this->gravity * 4 > $blockY) {
 					$this->motionY = -$this->gravity * 4;
@@ -153,16 +159,16 @@ abstract class Pets extends Creature {
 	}
 
 	public function onUpdate($currentTick) {
-		if(!($this->owner instanceof Player) || $this->owner->closed) {
-			$this->fastClose();
+		if(!($this->owner instanceof Player) or $this->owner->closed) {
+			$this->close();
 			return false;
 		}
-		if($this->closed){
+		if($this->closed) {
 			return false;
 		}
 		$tickDiff = $currentTick - $this->lastUpdate;
 		$this->lastUpdate = $currentTick;
-		if (is_null($this->closeTarget) && $this->distance($this->owner) > 40) {
+		if (is_null($this->closeTarget) and $this->distance($this->owner) > 40) {
 			$this->returnToOwner();
 		}
 		$this->entityBaseTick($tickDiff);
@@ -173,6 +179,7 @@ abstract class Pets extends Creature {
 	}
 
 	public function returnToOwner() {
+		if($this->owner instanceof Player);
 		$len = rand(2, 6);
 		$x = (-sin(deg2rad( $this->owner->yaw))) * $len  +  $this->owner->getX();
 		$z = cos(deg2rad( $this->owner->yaw)) * $len  +  $this->owner->getZ();
@@ -180,39 +187,76 @@ abstract class Pets extends Creature {
 		$this->y = $this->owner->getY() + 1;
 		$this->z = $z;
 	}
-	
-	public function fastClose() {
+
+	public function close() {
 		parent::close();
 	}
 
+	public function kill() {
+		if($this->owner instanceof Player);
+		$this->owner->sendMessage($this->getName().TF::YELLOW." died!");
+		parent::kill();
+	}
 
-	public function close(){
-		if(!($this->owner instanceof Player) || $this->owner->closed) {
-			$this->fastClose();
-			return;
+	public function setLastDamager($player) {
+		if($this->owner instanceof Player);
+		if (isset(Main::$pet[$this->owner->getName()])) {
+			$this->attacker[$this->getOwner()] = $player;
 		}
-		if(is_null($this->closeTarget)) {
-// 			$len = rand(12, 15);
-// 			$x = (-sin(deg2rad( $this->owner->yaw + 20))) * $len  +  $this->owner->getX();
-// 			$z = cos(deg2rad( $this->owner->yaw + 20)) * $len  +  $this->owner->getZ();
-// 			$this->closeTarget = new Vector3($x, $this->owner->getY() + 1, $z);
-			$this->kill();
-		} else {
-			if (isset(main::$pet[$this->owner->getName()])) {
-				$this->kill();
+	}
+
+	public function getLastDamager() {
+		return $this->attacker[$this->getOwner()];
+	}
+
+	public static function sendPetMessage(Player $player, $reason = 1) {
+		$availReasons = array(
+			"PET_WELCOME" => 1,
+			"PET_BYE" => 2,
+			"PET_RANDOM" => 3
+		);
+		if (!empty($availReasons[$reason])) {
+			switch ($availReasons[$reason]) {
+				case "PET_WELCOME":
+					$messages = array(
+						"Hi1",
+						"Hi2",
+						"Hi3",
+						"Hi4"
+					);
+					break;
+				case "PET_BYE":
+					$messages = array(
+						"Bye1",
+						"Bye2",
+						"Bye3",
+						"Bye4"
+					);
+					break;
+				case "PET_RANDOM": //neutral messages that can be said anytime
+					$messages = array(
+						"Test1",
+						"Test2",
+						"Test3",
+						"Test4"
+					);
+					break;
+				default: //same as random messages
+					$messages = array(
+						"Test1",
+						"Test2",
+						"Test3",
+						"Test4"
+					);
+					break;
 			}
+			$message = $messages[rand(0, count($messages) - 1)];
+			$player->sendMessage(self::getName() . TF::WHITE ." > " . $message);
 		}
 	}
 
-	
-	/**
-	 * Return interval from started to current time in minutes
-	 * 
-	 * @param string $started
-	 * @return float
-	 */
 	public static function getTimeInterval($started) {
-		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);	
+		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
-	
+
 }

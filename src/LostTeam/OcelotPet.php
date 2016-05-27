@@ -1,8 +1,9 @@
 <?php
-
 namespace LostTeam;
 
-class OcelotPet extends Pets{
+use pocketmine\entity\Tameable;
+
+class OcelotPet extends Pets implements Tameable{
 
     const NETWORK_ID = 22;
 

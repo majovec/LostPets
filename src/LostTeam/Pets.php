@@ -42,7 +42,7 @@ abstract class Pets extends Creature {
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
 				$pk->metadata = $this->dataProperties;
-				if (static::NETWORK_ID == 66){
+				if (static::NETWORK_ID == 66) {
 					$pk->metadata = [
 							15 => [0,1],
 							20 => [2,86]
@@ -154,10 +154,10 @@ abstract class Pets extends Creature {
 
 	public function onUpdate($currentTick) {
 		if(!($this->owner instanceof Player) or $this->owner->closed) {
-			$this->fastClose();
+			$this->close();
 			return false;
 		}
-		if($this->closed){
+		if($this->closed) {
 			return false;
 		}
 		$tickDiff = $currentTick - $this->lastUpdate;
@@ -181,27 +181,10 @@ abstract class Pets extends Creature {
 		$this->y = $this->owner->getY() + 1;
 		$this->z = $z;
 	}
-	
-	public function fastClose() {
-		parent::close();
-	}
 
-
-	public function close(){
-		if(!($this->owner instanceof Player) or $this->owner->closed) {
-			$this->fastClose();
-			return;
-		}
-		if(is_null($this->closeTarget)) {
-// 			$len = rand(12, 15);
-// 			$x = (-sin(deg2rad( $this->owner->yaw + 20))) * $len  +  $this->owner->getX();
-// 			$z = cos(deg2rad( $this->owner->yaw + 20)) * $len  +  $this->owner->getZ();
-// 			$this->closeTarget = new Vector3($x, $this->owner->getY() + 1, $z);
+	public function close() {
+		if (isset(Main::$pet[$this->owner->getName()])) {
 			$this->kill();
-		} else {
-			if (isset(Main::$pet[$this->owner->getName()])) {
-				$this->kill();
-			}
 		}
 	}
 
@@ -228,34 +211,34 @@ abstract class Pets extends Creature {
 			switch ($availReasons) {
 				case "PET_WELCOME":
 					$messages = array(
-						"",
-						"",
-						"",
-						""
+						"Hi1",
+						"Hi2",
+						"Hi3",
+						"Hi4"
 					);
 				break;
 				case "PET_BYE":
 					$messages = array(
-						"",
-						"",
-						"",
-						""
+						"Bye1",
+						"Bye2",
+						"Bye3",
+						"Bye4"
 					);
 				break;
 				case "PET_RANDOM": //neutral messages that can be said anytime
 					$messages = array(
-						"",
-						"",
-						"",
-						""
+						"Test1",
+						"Test2",
+						"Test3",
+						"Test4"
 					);
 				break;
 				default: //same as random messages
 					$messages = array(
-						"",
-						"",
-						"",
-						""
+						"Test1",
+						"Test2",
+						"Test3",
+						"Test4"
 					);
 				break;
 			}

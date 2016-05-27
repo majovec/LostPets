@@ -1,14 +1,12 @@
 <?php
-
 namespace LostTeam\task;
 
-use LostTeam\Main;
 use LostTeam\Pets;
 use pocketmine\Player;
 use pocketmine\scheduler\PluginTask;
 
 /**
- * This task checks every 1 minute if player is need to get random pet message
+ * This task checks every minute if player is need to get random pet message
  */
 class PetsTick extends PluginTask {
 	public $main;
@@ -37,13 +35,13 @@ class PetsTick extends PluginTask {
 	
 	/**
 	 * Check if player needs pet message
-	 * 
+	 *
 	 * @ param LbPlayer $player
 	 * @ return bool
 	 */
- 	private static function needPetMessage($player) {
+ 	private function needPetMessage($player) {
 		if($player instanceof Player);
-		if(self::getOwner()->getPet($player)) {
+		if($this->main->getPet($player)) {
 			if(rand(1,15) == 13) {
 				return true;
 			}

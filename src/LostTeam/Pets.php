@@ -85,10 +85,6 @@ abstract class Pets extends Creature {
 		return true;
 	}
 
-	public function setSpeed($speed) {
-		$this->speed[$this->getOwner()] = $speed;
-	}
-
 	public function getSpeed() {
 		return $this->speed[$this->getOwner()];
 	}

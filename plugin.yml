@@ -1,5 +1,5 @@
 name: Pets
-main: LostTeam\main
+main: LostTeam\Main
 version: 1.0.0
 api: [1.13.1, 2.0.0]
 description: ""
@@ -10,7 +10,7 @@ Permissions:
     default: true
     children:
       pets.command.list:
-        default: true
+        default: op
       pets.command.help:
         default: true
       pets.command.cycle:

@@ -1,7 +1,9 @@
 <?php
 namespace LostTeam;
 
-class OcelotPet extends Pets {
+use pocketmine\entity\Tameable;
+
+class OcelotPet extends Pets  implements Tameable{
 
     const NETWORK_ID = 22;
 
@@ -19,5 +21,9 @@ class OcelotPet extends Pets {
 
     public function getSpeed(){
         return "1.4";
+    }
+    
+    public function isTamed() {
+        return false;
     }
 }

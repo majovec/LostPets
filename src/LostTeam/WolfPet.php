@@ -1,7 +1,9 @@
 <?php
 namespace LostTeam;
 
-class WolfPet extends Pets {
+use pocketmine\entity\Tameable;
+
+class WolfPet extends Pets implements Tameable{
 
 	const NETWORK_ID = 14;
 
@@ -16,4 +18,7 @@ class WolfPet extends Pets {
 		return 1.2;
 	}
 
+	public function isTamed() {
+		return false;
+	}
 }

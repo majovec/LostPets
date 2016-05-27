@@ -18,6 +18,7 @@ abstract class Pets extends Creature {
 	protected $distanceToOwner = 0;
 	public $closeTarget = null;
 	public $attacker = null;
+	public $speed;
 
 	public function saveNBT() {
 		
@@ -25,6 +26,10 @@ abstract class Pets extends Creature {
 
 	public function setOwner(Player $player) {
 		$this->owner = $player;
+	}
+	
+	public function getOwner() {
+		return $this->owner;
 	}
 
 	public function spawnTo(Player $player) {
@@ -80,8 +85,12 @@ abstract class Pets extends Creature {
 		return true;
 	}
 
+	public function setSpeed($speed) {
+		$this->speed[$this->getOwner()] = $speed;
+	}
+
 	public function getSpeed() {
-		return 1;
+		return $this->speed[$this->getOwner()];
 	}
 
 	public function updateMove() {
@@ -183,32 +192,33 @@ abstract class Pets extends Creature {
 	}
 
 	public function close() {
-		if (isset(Main::$pet[$this->owner->getName()])) {
-			$this->kill();
-		}
+		parent::close();
+	}
+
+	public function kill() {
+		parent::kill();
 	}
 
 	public function setLastDamager($player) {
 		if($this->owner instanceof Player);
 		if (isset(Main::$pet[$this->owner->getName()])) {
-			$this->attacker = $player;
+			$this->attacker[$this->getOwner()] = $player;
 		}
 	}
 
 	public function getLastDamager() {
-		return $this->attacker;
+		return $this->attacker[$this->getOwner()];
 	}
 
-	public static function sendPetMessage(Player $player, $reason = "PET_WELCOME") {
-		//contains available language key strings
+	public static function sendPetMessage(Player $player, $reason = 1) {
 		$availReasons = array(
-			"PET_WELCOME",
-			"PET_BYE",
-			"PET_RANDOM"
+			"PET_WELCOME" => 1,
+			"PET_BYE" => 2,
+			"PET_RANDOM" => 3
 		);
 		if (!empty($availReasons[$reason])) {
 			$message = 'quirk!';//default message if something went wrong
-			switch ($availReasons) {
+			switch ($availReasons[$reason]) {
 				case "PET_WELCOME":
 					$messages = array(
 						"Hi1",

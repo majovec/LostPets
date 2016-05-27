@@ -21,13 +21,13 @@ abstract class Pets extends Creature {
 	public $speed;
 
 	public function saveNBT() {
-		
+
 	}
 
 	public function setOwner(Player $player) {
 		$this->owner = $player;
 	}
-	
+
 	public function getOwner() {
 		return $this->owner;
 	}
@@ -49,8 +49,8 @@ abstract class Pets extends Creature {
 				$pk->metadata = $this->dataProperties;
 				if (static::NETWORK_ID == 66) {
 					$pk->metadata = [
-							15 => [0,1],
-							20 => [2,86]
+						15 => [0,1],
+						20 => [2,86]
 					];
 					$pk->y = $this->y + 0.6;
 				}
@@ -62,7 +62,7 @@ abstract class Pets extends Creature {
 
 	public function updateMovement() {
 		if (
-				$this->lastX !== $this->x or $this->lastY !== $this->y or $this->lastZ !== $this->z or $this->lastYaw !== $this->yaw or $this->lastPitch !== $this->pitch
+			$this->lastX !== $this->x or $this->lastY !== $this->y or $this->lastZ !== $this->z or $this->lastYaw !== $this->yaw or $this->lastPitch !== $this->pitch
 		) {
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
@@ -74,14 +74,14 @@ abstract class Pets extends Creature {
 	}
 
 	public function attack($damage, EntityDamageEvent $source) {
-		
+
 	}
 
 	public function move($dx, $dy, $dz) {
 		$this->boundingBox->offset($dx, 0, 0);
 		$this->boundingBox->offset(0, 0, $dz);
 		$this->boundingBox->offset(0, $dy, 0);
-		$this->setComponents($this->x + $dx, $this->y + $dy, $this->z + $dz);		
+		$this->setComponents($this->x + $dx, $this->y + $dy, $this->z + $dz);
 		return true;
 	}
 
@@ -133,7 +133,7 @@ abstract class Pets extends Creature {
 					return;
 				}
 			} else {
-				if (!$block->canBeFlowedInto) {
+				if (!$block->canBeFlowedInto()) {
 					$this->motionY = 1.1;
 				} else {
 					$this->motionY = 0;
@@ -192,6 +192,8 @@ abstract class Pets extends Creature {
 	}
 
 	public function kill() {
+		if($this->owner instanceof Player);
+		$this->owner->sendMessage($this->getName().TF::YELLOW." died!");
 		parent::kill();
 	}
 
@@ -212,8 +214,6 @@ abstract class Pets extends Creature {
 			"PET_BYE" => 2,
 			"PET_RANDOM" => 3
 		);
-		if (!empty($availReasons[$reason])) {
-			$message = 'quirk!';//default message if something went wrong
 			switch ($availReasons[$reason]) {
 				case "PET_WELCOME":
 					$messages = array(
@@ -222,7 +222,7 @@ abstract class Pets extends Creature {
 						"Hi3",
 						"Hi4"
 					);
-				break;
+					break;
 				case "PET_BYE":
 					$messages = array(
 						"Bye1",
@@ -230,7 +230,7 @@ abstract class Pets extends Creature {
 						"Bye3",
 						"Bye4"
 					);
-				break;
+					break;
 				case "PET_RANDOM": //neutral messages that can be said anytime
 					$messages = array(
 						"Test1",
@@ -238,7 +238,7 @@ abstract class Pets extends Creature {
 						"Test3",
 						"Test4"
 					);
-				break;
+					break;
 				default: //same as random messages
 					$messages = array(
 						"Test1",
@@ -246,21 +246,14 @@ abstract class Pets extends Creature {
 						"Test3",
 						"Test4"
 					);
-				break;
+					break;
 			}
 			$message = $messages[rand(0, count($messages) - 1)];
 			$player->sendMessage(self::getName() . TF::WHITE ." > " . $message);
-		}
 	}
-	
-	/**
-	 * Return interval from started to current time in minutes
-	 * 
-	 * @param string $started
-	 * @return float
-	 */
+
 	public static function getTimeInterval($started) {
-		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);	
+		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
-	
+
 }

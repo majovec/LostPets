@@ -21,4 +21,8 @@ class OcelotPet extends Pets implements Tameable{
     public function getSpeed(){
         return "1.4";
     }
+
+    public function isTamed() {
+        return false;
+    }
 }

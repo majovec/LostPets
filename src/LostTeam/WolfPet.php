@@ -18,4 +18,7 @@ class WolfPet extends Pets implements Tameable{
 		return 1.2;
 	}
 
+	public function isTamed() {
+		return false;
+	}
 }

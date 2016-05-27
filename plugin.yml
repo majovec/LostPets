@@ -4,7 +4,15 @@ version: 1.0.0
 api: [1.13.1, 2.0.0]
 description: ""
 author: "LostTeam"
-
+commands:
+  pets:
+    usage: "/pets <SubCommand>"
+    description: "Primary Pets Command"
+    permission: pets.command
+  pet:
+    usage: "/pet <SubCommand>"
+    description: "Primary Pets Command"
+    permission: pets.command
 Permissions:
   pets.command:
     default: true

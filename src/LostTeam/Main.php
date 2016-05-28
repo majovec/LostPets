@@ -7,6 +7,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
@@ -23,7 +24,7 @@ use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
 	public static $pet, $petState, $isPetChanging, $type;
-	public $pets, $petType, $wishPet, $current;
+	public $pets, $petType, $wishPet, $current, $namehold = null;
 	public function onEnable() {
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
@@ -34,7 +35,8 @@ class Main extends PluginBase implements Listener {
 		Entity::registerEntity(BatPet::class);
 		Entity::registerEntity(SilverfishPet::class);
 		//Entity::registerEntity(BlockPet::class);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*60); //run each minute for random pet messages
+		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
+		$this->getLogger()->notice(TF::GREEN."Enabled!");
 	}
 
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
@@ -66,20 +68,9 @@ class Main extends PluginBase implements Listener {
 					}
 					if (isset($args[1])) {
 						$this->getPet($sender)->setNameTag($args[1]);
+						$this->getPet($sender)->setName($args[1]);
 						$sender->sendMessage("Name now set to: ".$args[1]);
 					}
-					break;
-				case "help":
-					if(!$sender->hasPermission('pet.command.help')) {
-						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
-						return true;
-					}
-					$sender->sendMessage(TF::YELLOW."=======".TF::BLUE."Pets".TF::YELLOW."=======");
-					$sender->sendMessage(TF::YELLOW."/pets help");
-					$sender->sendMessage(TF::YELLOW."/pets cycle");
-					$sender->sendMessage(TF::YELLOW."/pets name <Pet Name>");
-					$sender->sendMessage(TF::YELLOW."/pets list");
-					$sender->sendMessage(TF::YELLOW."/pets clear");
 					break;
 				case "cycle":
 					if(!$sender->hasPermission('pet.command.cycle')) {
@@ -88,12 +79,25 @@ class Main extends PluginBase implements Listener {
 					}
 					$types = array("ChickenPet","PigPet","WolfPet","BlazePet","RabbitPet","BatPet","SilverfishPet","MagmaPet");
 					$new = null;
+					if(!isset($this->current[$sender->getName()])) {
+						$this->current[$sender->getName()] = 0;
+					}
 					if($this->current[$sender->getName()] != count($types)-1) {
 						$new = $this->current[$sender->getName()]+1;
 					}else{
 						$new = 0;
 					}
+					if($this->getPet($sender) !== null) {
+						if($this->getPet($sender)->getNameTag() !== $this->getPet($sender)->getName()) {
+							$this->namehold = $this->getPet($sender)->getNameTag();
+						}
+					}
 					$this->changePet($sender, $types[$new]);
+					if($this->namehold !== null) {
+						$this->getPet($sender)->setName($this->namehold);
+						$this->getPet($sender)->setNameTag($this->namehold);
+					}
+					$this->namehold = null;
 					break;
 				case "list":
 					if(!$sender->hasPermission('pet.command.help')) {
@@ -105,10 +109,10 @@ class Main extends PluginBase implements Listener {
 					foreach($this->getServer()->getLevels() as $level) {
 						foreach($level->getEntities() as $entity) {
 							if($entity instanceof Pets) {
-								if($entity->getName() !== null) {
-									$sender->sendMessage($entity->getName());
+								if($entity->getNameTag() == $entity->getName()) {
+									$sender->sendMessage($entity->getOwner()."s pet");
 								}else {
-									$sender->sendMessage("Un-Named Pet");
+									$sender->sendMessage($entity->getNameTag());
 								}
 								$n+=1;
 							}
@@ -129,7 +133,7 @@ class Main extends PluginBase implements Listener {
 					$sender->sendMessage(TF::YELLOW."Total Cleared Pets are ".TF::BLUE.TF::BOLD.$n." Pets");
 					break;
 				default:
-					if($sender->hasPermission('pet.command')) {
+					if($sender->hasPermission('pet.command.help')) {
 						$sender->sendMessage(TF::YELLOW."=======".TF::BLUE."Pets".TF::YELLOW."=======");
 						$sender->sendMessage(TF::YELLOW."/pets help");
 						$sender->sendMessage(TF::YELLOW."/pets cycle");
@@ -146,6 +150,17 @@ class Main extends PluginBase implements Listener {
 			return true;
 		}
 		return false;
+	}
+
+	public function onDisable() {
+		foreach($this->getServer()->getLevels() as $level) {
+			foreach($level->getEntities() as $entity) {
+				if($entity instanceof Pets) {
+					$entity->close();
+				}
+			}
+		}
+		$this->getLogger()->notice(TF::GREEN."Disabled!");
 	}
 
 	public function create(Player $player,$type, Position $source, ...$args)
@@ -221,6 +236,7 @@ class Main extends PluginBase implements Listener {
 			$attacker = $attackerEvent->getDamager();
 			if (isset(self::$pet[$entity->getName()])) {
 				self::$pet[$entity->getName()]->setLastDamager($attacker->getName());
+				self::$pet[$entity->getName()]->setPaused();
 				return;
 			}
 		}
@@ -228,7 +244,14 @@ class Main extends PluginBase implements Listener {
 
 	public function onPlayerJoin(PlayerJoinEvent $event) {
 		$player = $event->getPlayer();
-		$this->getServer()->getCommandMap()->dispatch($player, "pet cycle");
+		$this->createPet($player);
+	}
+
+	public function onPlayerRespawn(PlayerRespawnEvent $event) {
+		$player = $event->getPlayer();
+		$pos = $event->getRespawnPosition();
+		self::$pet[$player->getName()]->setPaused(false);
+		$this->getPet($player)->returnToOwner();
 	}
 
 	public function togglePet(Player $player) {
@@ -258,5 +281,49 @@ class Main extends PluginBase implements Listener {
 		}else{
 			return self::$pet[$player->getName()];
 		}
+	}
+
+	public function sendPetMessage(Player $player, $reason = 1) {
+		$availReasons = array(
+			1 => "PET_WELCOME",
+			2 => "PET_BYE",
+			3 => "PET_RANDOM"
+		);
+		switch ($availReasons[$reason]) {
+			case "PET_WELCOME":
+				$messages = array(
+					"Hey there Best Friend!",
+					"Hi!",
+					"Welcome Back!",
+					"Where ya been?"
+				);
+				break;
+			case "PET_BYE":
+				$messages = array(
+					"Bye!",
+					"Bye Bye!",
+					"see ya later!",
+					"I'll Miss Ya!"
+				);
+				break;
+			case "PET_RANDOM": //neutral messages that can be said anytime
+				$messages = array(
+					"I'm Hungry, do yo have any food?",
+					"Test2",
+					"Test3",
+					"Test4"
+				);
+				break;
+			default: //same as random messages
+				$messages = array(
+					"def1",
+					"def2",
+					"def3",
+					"def4"
+				);
+				break;
+		}
+		$message = $messages[rand(0, count($messages) - 1)];
+		$player->sendMessage($this->getPet($player)->getNameTag() . TF::WHITE ." > " .TF::GRAY. $message);
 	}
 }

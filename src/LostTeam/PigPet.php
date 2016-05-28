@@ -1,7 +1,9 @@
 <?php
 namespace LostTeam;
 
-class PigPet extends Pets {
+use pocketmine\entity\Rideable;
+
+class PigPet extends Pets implements Rideable{
 
 	const NETWORK_ID = 12;
 

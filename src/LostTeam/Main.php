@@ -29,12 +29,12 @@ class Main extends PluginBase implements Listener {
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
 		Entity::registerEntity(PigPet::class);
-		Entity::registerEntity(BlazePet::class);
-		Entity::registerEntity(MagmaPet::class);
+//		Entity::registerEntity(BlazePet::class);
+//		Entity::registerEntity(MagmaPet::class);
 		Entity::registerEntity(RabbitPet::class);
-		Entity::registerEntity(BatPet::class);
+//		Entity::registerEntity(BatPet::class);
 		Entity::registerEntity(SilverfishPet::class);
-		//Entity::registerEntity(BlockPet::class);
+//		Entity::registerEntity(BlockPet::class);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
 		$this->getLogger()->notice(TF::GREEN."Enabled!");
 	}
@@ -77,7 +77,7 @@ class Main extends PluginBase implements Listener {
 						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
 						return true;
 					}
-					$types = array("ChickenPet","PigPet","WolfPet","BlazePet","RabbitPet","BatPet","SilverfishPet","MagmaPet");
+					$types = array("ChickenPet","PigPet","WolfPet","RabbitPet","SilverfishPet",);
 					$new = null;
 					if(!isset($this->current[$sender->getName()])) {
 						$this->current[$sender->getName()] = 0;

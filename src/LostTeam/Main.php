@@ -26,6 +26,7 @@ class Main extends PluginBase implements Listener {
 	public static $pet, $petState, $isPetChanging, $type;
 	public $pets, $petType, $wishPet, $current, $namehold = null;
 	public function onEnable() {
+		$this->update();
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
 		Entity::registerEntity(PigPet::class);
@@ -38,7 +39,40 @@ class Main extends PluginBase implements Listener {
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
 		$this->getLogger()->notice(TF::GREEN."Enabled!");
 	}
-
+	public function update() {
+		$this->saveResource("auto-update.yml");
+    		$update = new Config($this->getDataFolder()."auto-update.yml", Config::YAML);
+		if($update->get("enabled")){
+			try{
+				$url = "https://lostTeam.github.io/plugins/Pets/api/?version=".$this->getDescription()->getVersion();
+				$content = Utils::getUrl($url);
+				$data = json_decode($content, true);
+				if($data["update-available"] === true){
+					$this->getLogger()->notice("New version of Pets Plugin was released. Version : ".$data["new-version"]);
+					if($update->get("force-update") and $this->isPhar()){
+						$address = file_get_contents($data["download-address"]);
+						$e = explode("/", $data["download-address"]);
+						$filename = end($e);
+						file_put_contents($this->getDataFolder()."../".$filename, $address);
+						if($this->isPhar()){
+							$file = substr($this->getFile(), 7, -1);
+							@unlink($file);
+						}
+						$this->getLogger()->notice("Pets Plugin was updated automatically to version ".$data["new-version"]);
+            					$this->getServer()->shutdown();
+            					return;
+					}
+				}else{
+					$this->getLogger()->notice("Pets Plugin is currently up-to-date.");
+				}
+        if($data["notice"] !== "") {
+          $this->getLogger()->notice($data["notice"]);
+        }
+			}catch(\Exception $e){
+				$this->getLogger()->error("Error while retrieving data from server : \n".$e);
+			}
+		}
+	}
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
 		if(strtolower($command) === "pet" or strtolower($command) === "pets") {
 			if(!$sender instanceof Player) {

@@ -231,15 +231,19 @@ class Main extends PluginBase implements Listener {
 		$attackerEvent = $entity->getLastDamageCause();
 		if(!$entity instanceof Player and $entity instanceof Pets) {
 			$this->disablePet($entity->getOwner());
+			return;
 		}
-		if ($attackerEvent instanceof EntityDamageByEntityEvent) {
-			$attacker = $attackerEvent->getDamager();
-			if (isset(self::$pet[$entity->getName()])) {
-				self::$pet[$entity->getName()]->setLastDamager($attacker->getName());
-				self::$pet[$entity->getName()]->setPaused();
-				return;
+		if($entity instanceof Player) {
+			if ($attackerEvent instanceof EntityDamageByEntityEvent) {
+				$attacker = $attackerEvent->getDamager();
+				if (isset(self::$pet[$entity->getName()])) {
+					self::$pet[$entity->getName()]->setLastDamager($attacker->getName());
+					self::$pet[$entity->getName()]->setPaused();
+					return;
+				}
 			}
 		}
+		return;
 	}
 
 	public function onPlayerJoin(PlayerJoinEvent $event) {

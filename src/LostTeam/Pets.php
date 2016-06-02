@@ -28,7 +28,7 @@ abstract class Pets extends Creature {
 	public function getOwner() {
 		return $this->owner;
 	}
-	
+
 	public function setPaused($paused = true) {
 		$this->paused[$this->getOwner()] = $paused;
 	}
@@ -212,7 +212,7 @@ abstract class Pets extends Creature {
 	public static function getTimeInterval($started) {
 		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
-	
+
 	public function getNameTag() {
 		if($this->name == null) {
 			return $this->getName();

@@ -20,6 +20,8 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Player;
+use pocketmine\utils\Config;
+use pocketmine\utils\Utils;
 use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
@@ -45,7 +47,7 @@ class Main extends PluginBase implements Listener {
 		if($update->get("enabled")){
 			try{
 				$url = "https://lostTeam.github.io/plugins/Pets/api/?version=".$this->getDescription()->getVersion();
-				$content = Utils::getUrl($url);
+				$content = Utils::getURL($url);
 				$data = json_decode($content, true);
 				if($data["update-available"] === true){
 					$this->getLogger()->notice("New version of Pets Plugin was released. Version : ".$data["new-version"]);

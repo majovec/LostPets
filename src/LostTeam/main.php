@@ -167,7 +167,6 @@ class Main extends PluginBase implements Listener {
 						}
 					}
 					$sender->sendMessage(TF::YELLOW."Total Cleared Pets are ".TF::BLUE.TF::BOLD.$n." Pets");
-					return $n;
 					break;
 				default:
 					if($sender->hasPermission('pet.command.help')) {

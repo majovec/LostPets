@@ -14,11 +14,8 @@ use pocketmine\utils\TextFormat as TF;
 
 abstract class Pets extends Creature {
 
-	protected $owner = null;
-	protected $distanceToOwner = 0;
-	public $closeTarget = null;
-	public $attacker = null;
-	public $speed;
+	protected $owner = null, $distanceToOwner = 0;
+	public $closeTarget = null, $attacker = null, $speed  = null, $name = null, $paused = false;
 
 	public function saveNBT() {
 
@@ -29,8 +26,11 @@ abstract class Pets extends Creature {
 	}
 
 	public function getOwner() {
-		if($this->owner instanceof Player);
 		return $this->owner;
+	}
+
+	public function setPaused($paused = true) {
+		$this->paused[$this->getOwner()] = $paused;
 	}
 
 	public function spawnTo(Player $player) {
@@ -163,7 +163,7 @@ abstract class Pets extends Creature {
 			$this->close();
 			return false;
 		}
-		if($this->closed) {
+		if($this->closed or $this->paused[$this->getOwner()]) {
 			return false;
 		}
 		$tickDiff = $currentTick - $this->lastUpdate;
@@ -209,54 +209,18 @@ abstract class Pets extends Creature {
 		return $this->attacker[$this->getOwner()];
 	}
 
-	public static function sendPetMessage(Player $player, $reason = 1) {
-		$availReasons = array(
-			"PET_WELCOME" => 1,
-			"PET_BYE" => 2,
-			"PET_RANDOM" => 3
-		);
-		if (!empty($availReasons[$reason])) {
-			switch ($availReasons[$reason]) {
-				case "PET_WELCOME":
-					$messages = array(
-						"Hi1",
-						"Hi2",
-						"Hi3",
-						"Hi4"
-					);
-					break;
-				case "PET_BYE":
-					$messages = array(
-						"Bye1",
-						"Bye2",
-						"Bye3",
-						"Bye4"
-					);
-					break;
-				case "PET_RANDOM": //neutral messages that can be said anytime
-					$messages = array(
-						"Test1",
-						"Test2",
-						"Test3",
-						"Test4"
-					);
-					break;
-				default: //same as random messages
-					$messages = array(
-						"Test1",
-						"Test2",
-						"Test3",
-						"Test4"
-					);
-					break;
-			}
-			$message = $messages[rand(0, count($messages) - 1)];
-			$player->sendMessage(self::getName() . TF::WHITE ." > " . $message);
-		}
-	}
-
 	public static function getTimeInterval($started) {
 		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
 
+	public function getNameTag() {
+		if($this->name == null) {
+			return $this->getName();
+		}
+		return $this->name;
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+	}
 }

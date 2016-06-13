@@ -1,11 +1,11 @@
 <?php
 namespace LostTeam\task;
 
-use LostTeam\Pets;
 use LostTeam\Main;
 
 use pocketmine\Player;
 use pocketmine\scheduler\PluginTask;
+use pocketmine\Server;
 
 class PetsTick extends PluginTask {
 	public $main;
@@ -15,12 +15,13 @@ class PetsTick extends PluginTask {
 	}
 
 	public function onRun($currentTick) {
-		$onlinePlayers = \pocketmine\Server::getInstance()->getOnlinePlayers();
- 		foreach ($onlinePlayers as $player) {
- 			if ($this->needPetMessage($player)) {
- 				Pets::sendPetMessage($player, 3);
- 			}
- 		}
+		if($this->main instanceof Main);
+		$onlinePlayers = Server::getInstance()->getOnlinePlayers();
+		foreach ($onlinePlayers as $player) {
+			if ($this->needPetMessage($player)) {
+				$this->main->sendPetMessage($player, 3);
+			}
+		}
 	}
 
 	public function needPetMessage(Player $player) {

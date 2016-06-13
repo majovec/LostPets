@@ -3,7 +3,7 @@ namespace LostTeam;
 
 use pocketmine\entity\Tameable;
 
-class OcelotPet extends Pets implements Tameable{
+class OcelotPet extends Pets  implements Tameable{
 
     const NETWORK_ID = 22;
 
@@ -12,6 +12,7 @@ class OcelotPet extends Pets implements Tameable{
     const TYPE_WILD = 0;
 
     public $width = 0.312;
+
     public $height = 0.75;
 
     public function getName(){
@@ -21,7 +22,7 @@ class OcelotPet extends Pets implements Tameable{
     public function getSpeed(){
         return "1.4";
     }
-
+    
     public function isTamed() {
         return false;
     }

@@ -10,10 +10,10 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -46,7 +46,7 @@ class Main extends PluginBase implements Listener {
     		$update = new Config($this->getDataFolder()."auto-update.yml", Config::YAML);
 		if($update->get("enabled")){
 			try{
-				$url = "https://lostTeam.github.io/plugins/Pets/api/?version=".$this->getDescription()->getVersion();
+				$url = "https://lostteam.github.io/Plugins/Pets/api/?version=".$this->getDescription()->getVersion();
 				$content = Utils::getURL($url);
 				$data = json_decode($content, true);
 				if($data["update-available"] === true){
@@ -78,7 +78,7 @@ class Main extends PluginBase implements Listener {
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
 		if(strtolower($command) === "pet" or strtolower($command) === "pets") {
 			if(!$sender instanceof Player) {
-				$sender->sendMessage("Only Players can use this plugin");
+				$sender->sendMessage("Only Players can use this command");
 				return true;
 			}
 			if (!isset($args[0])) {
@@ -203,20 +203,20 @@ class Main extends PluginBase implements Listener {
 	public function create(Player $player,$type, Position $source, ...$args)
 	{
 		$chunk = $source->getLevel()->getChunk($source->x >> 4, $source->z >> 4, true);
-		$nbt = new Compound("", [
-			"Pos" => new Enum("Pos", [
-				new Double("", $source->x),
-				new Double("", $source->y),
-				new Double("", $source->z)
+		$nbt = new CompoundTag("", [
+			"Pos" => new ListTag("Pos", [
+				new DoubleTag("", $source->x),
+				new DoubleTag("", $source->y),
+				new DoubleTag("", $source->z)
 			]),
-			"Motion" => new Enum("Motion", [
-				new Double("", 0),
-				new Double("", 0),
-				new Double("", 0)
+			"Motion" => new ListTag("Motion", [
+				new DoubleTag("", 0),
+				new DoubleTag("", 0),
+				new DoubleTag("", 0)
 			]),
-			"Rotation" => new Enum("Rotation", [
-				new Float("", $source instanceof Location ? $source->yaw : 0),
-				new Float("", $source instanceof Location ? $source->pitch : 0)
+			"Rotation" => new ListTag("Rotation", [
+				new FloatTag("", $source instanceof Location ? $source->yaw : 0),
+				new FloatTag("", $source instanceof Location ? $source->pitch : 0)
 			]),
 		]);
 		$pet = Entity::createEntity($type, $chunk, $nbt, ...$args);

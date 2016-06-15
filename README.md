@@ -22,8 +22,8 @@
 - Certain Pets Don't Fly
 
 ### Contributions
-We accept contributions! If you like to add an feature, Please propose an PR1
-We gladly review and accept them!
+#####We accept contributions! If you like to add an feature, Please propose an PR!
+#####We gladly review and accept them!
 
 # Disclaimer
 #####This plugin is fully re-written by LostTeam and GlitchPlayer (PHP 7 branch).

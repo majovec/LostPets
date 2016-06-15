@@ -9,6 +9,22 @@
 #####IP: wyvernhigh.no-ip.org
 #####Port: 19133
 
+### Features
+- Pets are following you
+- Pets can be changed easily
+- Pets can be easily renamed
+- List of pets to choose from!
+- OP Pet Removal
+
+### Unimplemented Features
+- Pet Riding
+- Pet Inventories
+- Certain Pets Don't Fly
+
+### Contributions
+#####We accept contributions! If you like to add an feature, Please propose an PR!
+#####We gladly review and accept them!
+
 # Disclaimer
 #####This plugin is fully re-written by LostTeam and GlitchPlayer (PHP 7 branch).
 #####This plugin was from WilliamTDR's Plugin "LBCore", and fully converted to standalone plugin.

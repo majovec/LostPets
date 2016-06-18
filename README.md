@@ -22,10 +22,10 @@
 - Certain Pets Don't Fly
 
 ### TODO
-- Add Custom Messages []
-- Add Pet Riding []
-- Add Pet Inventories []
-- Add More Commands []
+- Add Custom Messages [ ]
+- Add Pet Riding [ ]
+- Add Pet Inventories [ ]
+- Add More Commands [ ]
 
 ### Contributions
 #####We accept contributions! If you like to add an feature, Please propose an PR!

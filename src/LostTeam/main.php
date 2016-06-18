@@ -349,10 +349,10 @@ class Main extends PluginBase implements Listener {
 				break;
 			case "PET_RANDOM": //neutral messages that can be said anytime
 				$messages = array(
-					"I'm Hungry, do yo have any food?",
-					"Test2",
-					"Test3",
-					"Test4"
+					"I'm Hungry, do you have any food?",
+					"I'm gonna starve here... Please... Food",
+					"I smell steak in your pocket! Can I have one?",
+					"I will eat you if you don't feed me"
 				);
 				break;
 			default: //same as random messages

@@ -1,5 +1,6 @@
 name: Pets
 main: LostTeam\Main
+version: 0.7.0_BETA
 api: [1.13.1, 2.0.0]
 description: ""
 author: "LostTeam"

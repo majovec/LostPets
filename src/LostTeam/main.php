@@ -26,7 +26,7 @@ use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
 	public static $pet, $petState, $isPetChanging, $type;
-	public $pets, $petType, $wishPet, $current, $namehold = null;
+	public $pets, $petType, $wishPet, $current, $namehold = null, $users;
 	public function onEnable() {
 		$this->update();
 		Entity::registerEntity(ChickenPet::class);
@@ -44,6 +44,7 @@ class Main extends PluginBase implements Listener {
 	public function update() {
 		$this->saveResource("auto-update.yml");
     		$update = new Config($this->getDataFolder()."auto-update.yml", Config::YAML);
+    		$update->set("enabled",false);
 		if($update->get("enabled")){
 			try{
 				$url = "https://lostteam.github.io/Plugins/Pets/api/?version=".$this->getDescription()->getVersion();
@@ -113,6 +114,7 @@ class Main extends PluginBase implements Listener {
 						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
 						return true;
 					}
+					array_push($users, $sender->getName());
 					$types = array("ChickenPet","PigPet","WolfPet","RabbitPet","SilverfishPet",);
 					$new = null;
 					if(!isset($this->current[$sender->getName()])) {

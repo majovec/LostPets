@@ -20,6 +20,7 @@
 ##### We accept contributions! If you like to add an feature, Please propose an PR!
 ##### We gladly review and accept them!
 
-# Disclaimer
+## Disclaimer
+##### This plugin is only for php7 Servers
 ##### This plugin is fully re-written by The LostTeam Programming Orginization.
 ##### This plugin was origonally from WilliamTDR's Plugin "LBCore", and fully converted to standalone plugin.

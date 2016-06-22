@@ -26,9 +26,11 @@ class PetsTick extends PluginTask {
 
 	public function needPetMessage(Player $player) {
 		if($this->main instanceof Main);
-		if($this->main->getPet($player) !== null) {
-			if(rand(1,15) == 13) {
-				return true;
+		if(in_array($this->main->users,$player->getName())) {
+			if($this->main->getPet($player) !== null) {
+				if(rand(1,15) == 13) {
+					return true;
+				}
 			}
 		}
 		return false;

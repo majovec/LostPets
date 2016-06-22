@@ -5,10 +5,6 @@
 ##### Ip: LostTester.ddns.net
 ##### Port: 19134
 
-### Primary Test Server
-##### IP: wyvernhigh.no-ip.org
-##### Port: 19133
-
 ### Features
 - Pets are following you
 - Pets can be changed easily

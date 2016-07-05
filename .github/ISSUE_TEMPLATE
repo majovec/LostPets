@@ -2,6 +2,8 @@
 <!-- Welcome to the LostTeam issue tracker! -->
 <!--Before you make an issue, make sure your issue matches the criteria below. -->
 <!-- PLEASE TICK THE CHECKBOXES -->
+
+<!-- DO NOT WRITE ANYTHING IN THE "[ ]"!! ONCE ISSUE IS CREATED, CHECK THE BOXES THAT APPLY!!! -->
 - [ ] This issue isn't related to third party builds of PocketMine
 - [ ] This issue isn't duplicated - you can check if it is by using the search bar located at the top left hand corner and select "Issues" on the left.
 - [ ] This issue includes appropriate markdown for sections - e.g. code blocks for crash dumps.

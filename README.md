@@ -4,10 +4,10 @@
 ### Primary Test Server:
 ##### Ip: LostTester.ddns.net
 ##### Port: 19134
+###### NOTE: Usually inactive, may be used when jasonwynn10 is active
 ### Beta test server (with minigames):
 ##### IP: scpe.game-server.cc
 ##### Port: 19132 (or 443 if using VPN)
-###### NOTE: Unfortunately the proxy is busted, server should be up and working by the end of august though.
 ### Features
 - Pets follow their owners
 - Pets are interchangeable

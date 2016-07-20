@@ -26,7 +26,7 @@ use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
 	public static $pet, $petState, $isPetChanging, $type;
-	public $pets, $petType, $wishPet, $current, $namehold = null, $users;
+	public $pets, $petType, $wishPet, $current, $namehold = null, $users = array();
 	public function onEnable() {
 		$this->update();
 		Entity::registerEntity(ChickenPet::class);
@@ -114,7 +114,7 @@ class Main extends PluginBase implements Listener {
 						$sender->sendMessage(TF::RED . "You do not have permission to use this command");
 						return true;
 					}
-					array_push($users, $sender->getName());
+					array_push($this->users, $sender->getName());
 					$types = array("ChickenPet","PigPet","WolfPet","RabbitPet","SilverfishPet",);
 					$new = null;
 					if(!isset($this->current[$sender->getName()])) {

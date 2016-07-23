@@ -8,11 +8,11 @@ class CreeperPet extends Pets {
     public $height = 0.75;
     public $width = 0.4;
 
-    public function getName(){
+    public function getName() {
         return "CreeperPet";
     }
 
-    public function getSpeed(){
+    public function getSpeed() {
         return 1.2;
     }
 }

@@ -9,7 +9,7 @@ use pocketmine\Server;
 
 class PetsTick extends PluginTask {
 	public $main;
-	public function __construct($plugin) {
+	public function __construct(Main $plugin) {
 		parent::__construct($plugin);
 		$this->main = $plugin;
 	}
@@ -24,7 +24,7 @@ class PetsTick extends PluginTask {
 		}
 	}
 
-	public function needPetMessage(Player $player) {
+	private function needPetMessage(Player $player) {
 		if($this->main instanceof Main);
 		if(in_array($player->getName(),$this->main->users)) {
 			if($this->main->getPet($player) !== null) {

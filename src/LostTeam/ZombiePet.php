@@ -8,7 +8,7 @@ class ZombiePet extends Pets {
     public $width = 0.6;
     public $height = 1.8;
 
-    public function getName(){
+    public function getName() {
         return "ZombiePet";
     }
 

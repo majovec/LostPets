@@ -5,7 +5,6 @@ use LostTeam\task\PetsTick;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\Spider;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
@@ -335,6 +334,7 @@ class Main extends PluginBase implements Listener {
     public function onPlayerJoin(PlayerJoinEvent $event) {
 		$player = $event->getPlayer();
 		$this->createPet($player);
+        $this->sendPetMessage($event->getPlayer(),1);
 	}
 
     /**

@@ -5,6 +5,7 @@ use LostTeam\task\PetsTick;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Spider;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
@@ -42,6 +43,12 @@ class Main extends PluginBase implements Listener {
 //		Entity::registerEntity(BatPet::class);
 		Entity::registerEntity(SilverfishPet::class);
 //		Entity::registerEntity(BlockPet::class);
+        Entity::registerEntity(EndermanPet::class);
+        Entity::registerEntity(PigmanPet::class);
+        Entity::registerEntity(PigPet::class);
+        Entity::registerEntity(SkeletonPet::class);
+        Entity::registerEntity(SpiderPet::class);
+        Entity::registerEntity(ZombiePet::class);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
 		$this->getLogger()->notice(TF::GREEN."Enabled!");
 	}

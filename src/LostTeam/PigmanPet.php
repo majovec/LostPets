@@ -1,7 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Jason
- * Date: 7/23/2016
- * Time: 10:55 AM
- */
+namespace LostTeam;
+
+class PigmanPet extends Pets {
+
+    const NETWORK_ID = 36;
+
+    public $width;
+    public $height;
+
+    public function getName() {
+        return "PigmanPet";
+    }
+
+    public function getSpeed() {
+        return 1.2;
+    }
+}

@@ -27,7 +27,11 @@ use pocketmine\utils\TextFormat as TF;
 class Main extends PluginBase implements Listener {
 	public static $pet, $petState, $isPetChanging, $type;
 	public $pets, $petType, $wishPet, $current, $namehold = null, $users = array();
-	public function onEnable() {
+
+    /**
+     *
+     */
+    public function onEnable() {
 		$this->update();
 		Entity::registerEntity(ChickenPet::class);
 		Entity::registerEntity(WolfPet::class);
@@ -41,7 +45,11 @@ class Main extends PluginBase implements Listener {
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
 		$this->getLogger()->notice(TF::GREEN."Enabled!");
 	}
-	public function update() {
+
+    /**
+     *
+     */
+    public function update() {
 		$this->saveResource("auto-update.yml");
     		$update = new Config($this->getDataFolder()."auto-update.yml", Config::YAML);
     		$update->set("enabled",false);
@@ -76,7 +84,15 @@ class Main extends PluginBase implements Listener {
 			}
 		}
 	}
-	public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
+
+    /**
+     * @param CommandSender $sender
+     * @param Command $command
+     * @param string $label
+     * @param array $args
+     * @return bool
+     */
+    public function onCommand(CommandSender $sender, Command $command, $label, array $args) {
 		if(strtolower($command) === "pet" or strtolower($command) === "pets") {
 			if(!$sender instanceof Player) {
 				$sender->sendMessage("Only Players can use this command");
@@ -191,7 +207,10 @@ class Main extends PluginBase implements Listener {
 		return false;
 	}
 
-	public function onDisable() {
+    /**
+     *
+     */
+    public function onDisable() {
 		foreach($this->getServer()->getLevels() as $level) {
 			foreach($level->getEntities() as $entity) {
 				if($entity instanceof Pets) {
@@ -202,7 +221,14 @@ class Main extends PluginBase implements Listener {
 		$this->getLogger()->notice(TF::GREEN."Disabled!");
 	}
 
-	public function create(Player $player,$type, Position $source, ...$args)
+    /**
+     * @param Player $player
+     * @param $type
+     * @param Position $source
+     * @param array ...$args
+     * @return Entity
+     */
+    public function create(Player $player, $type, Position $source, ...$args)
 	{
 		$chunk = $source->getLevel()->getChunk($source->x >> 4, $source->z >> 4, true);
 		$nbt = new CompoundTag("", [
@@ -231,9 +257,14 @@ class Main extends PluginBase implements Listener {
 		return $pet;
 	}
 
-	public function createPet(Player $player, $type = null) {
+    /**
+     * @param Player $player
+     * @param null $type
+     * @return null|Entity
+     */
+    public function createPet(Player $player, $type = null) {
 		if (isset($this->pets[$player->getName()]) != true) {
-			$pets = array("ChickenPet", "PigPet","WolfPet","BlazePet","RabbitPet","BatPet", "SilverfishPet", "MagmaPet", "OcelotPet");
+			$pets = array("ChickenPet", "PigPet","WolfPet", "OcelotPet", "CowPet", "CreeperPet");
 			$len = rand(8, 12);
 			$x = (-sin(deg2rad($player->yaw))) * $len  + $player->getX();
 			$z = cos(deg2rad($player->yaw)) * $len  + $player->getZ();
@@ -257,7 +288,10 @@ class Main extends PluginBase implements Listener {
 		return null;
 	}
 
-	public function onPlayerQuit(PlayerQuitEvent $event) {
+    /**
+     * @param PlayerQuitEvent $event
+     */
+    public function onPlayerQuit(PlayerQuitEvent $event) {
 		$player = $event->getPlayer();
 		$pet = $this->getPet($player);
 		if (!is_null($pet)) {
@@ -265,7 +299,10 @@ class Main extends PluginBase implements Listener {
 		}
 	}
 
-	public function onDeath(EntityDeathEvent $event) {
+    /**
+     * @param EntityDeathEvent $event
+     */
+    public function onDeath(EntityDeathEvent $event) {
 		$entity = $event->getEntity();
 		$attackerEvent = $entity->getLastDamageCause();
 		if(!$entity instanceof Player and $entity instanceof Pets) {
@@ -285,19 +322,28 @@ class Main extends PluginBase implements Listener {
 		return;
 	}
 
-	public function onPlayerJoin(PlayerJoinEvent $event) {
+    /**
+     * @param PlayerJoinEvent $event
+     */
+    public function onPlayerJoin(PlayerJoinEvent $event) {
 		$player = $event->getPlayer();
 		$this->createPet($player);
 	}
 
-	public function onPlayerRespawn(PlayerRespawnEvent $event) {
+    /**
+     * @param PlayerRespawnEvent $event
+     */
+    public function onPlayerRespawn(PlayerRespawnEvent $event) {
 		$player = $event->getPlayer();
 		$pos = $event->getRespawnPosition();
 		self::$pet[$player->getName()]->setPaused(false);
 		$this->getPet($player)->returnToOwner();
 	}
 
-	public function togglePet(Player $player) {
+    /**
+     * @param Player $player
+     */
+    public function togglePet(Player $player) {
 		if (isset(self::$pet[$player->getName()])) {
 			self::$pet[$player->getName()]->close();
 			unset(self::$pet[$player->getName()]);
@@ -306,19 +352,30 @@ class Main extends PluginBase implements Listener {
 		self::$pet[$player->getName()] = $this->createPet($player);
 	}
 
-	public function disablePet(Player $player) {
+    /**
+     * @param Player $player
+     */
+    public function disablePet(Player $player) {
 		if (isset(self::$pet[$player->getName()])) {
 			self::$pet[$player->getName()]->close();
 			self::$pet[$player->getName()] = null;
 		}
 	}
 
-	public function changePet(Player $player, $newtype) {
+    /**
+     * @param Player $player
+     * @param $newtype
+     */
+    public function changePet(Player $player, $newtype) {
 		$this->disablePet($player);
 		self::$pet[$player->getName()] = $this->createPet($player, $newtype);
 	}
 
-	public function getPet(Player $player) {
+    /**
+     * @param Player $player
+     * @return mixed
+     */
+    public function getPet(Player $player) {
 		if(self::$pet instanceof Pets) {
 			return self::$pet[$player->getName()];
 		}else{
@@ -326,7 +383,11 @@ class Main extends PluginBase implements Listener {
 		}
 	}
 
-	public function sendPetMessage(Player $player, $reason = 1) {
+    /**
+     * @param Player $player
+     * @param int $reason
+     */
+    public function sendPetMessage(Player $player, $reason = 1) {
 		$availReasons = array(
 			1 => "PET_WELCOME",
 			2 => "PET_BYE",

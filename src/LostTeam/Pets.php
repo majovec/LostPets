@@ -17,23 +17,38 @@ abstract class Pets extends Creature {
 	protected $owner = null, $distanceToOwner = 0;
 	public $closeTarget = null, $attacker = null, $speed  = null, $name = null, $paused = false;
 
-	public function saveNBT() {
+    /**
+     *
+     */
+    public function saveNBT() {
 
 	}
 
-	public function setOwner(Player $player) {
+    /**
+     * @param Player $player
+     */
+    public function setOwner(Player $player) {
 		$this->owner = $player;
 	}
 
-	public function getOwner() {
+    /**
+     * @return null
+     */
+    public function getOwner() {
 		return $this->owner;
 	}
 
-	public function setPaused($paused = true) {
+    /**
+     * @param bool $paused
+     */
+    public function setPaused($paused = true) {
 		$this->paused[$this->getOwner()] = $paused;
 	}
 
-	public function spawnTo(Player $player) {
+    /**
+     * @param Player $player
+     */
+    public function spawnTo(Player $player) {
 		if(!$this->closed ) {
 			if (!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
 				$pk = new AddEntityPacket();
@@ -63,7 +78,10 @@ abstract class Pets extends Creature {
 		}
 	}
 
-	public function updateMovement() {
+    /**
+     *
+     */
+    public function updateMovement() {
 		if (
 			$this->lastX !== $this->x or $this->lastY !== $this->y or $this->lastZ !== $this->z or $this->lastYaw !== $this->yaw or $this->lastPitch !== $this->pitch
 		) {
@@ -76,11 +94,21 @@ abstract class Pets extends Creature {
 		$this->level->addEntityMovement($this->chunk->getX(), $this->chunk->getZ(), $this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch);
 	}
 
-	public function attack($damage, EntityDamageEvent $source) {
+    /**
+     * @param float $damage
+     * @param EntityDamageEvent $source
+     */
+    public function attack($damage, EntityDamageEvent $source) {
 
 	}
 
-	public function move($dx, $dy, $dz) {
+    /**
+     * @param $dx
+     * @param $dy
+     * @param $dz
+     * @return bool
+     */
+    public function move($dx, $dy, $dz) {
 		$this->boundingBox->offset($dx, 0, 0);
 		$this->boundingBox->offset(0, 0, $dz);
 		$this->boundingBox->offset(0, $dy, 0);
@@ -88,11 +116,17 @@ abstract class Pets extends Creature {
 		return true;
 	}
 
-	public function getSpeed() {
+    /**
+     * @return mixed
+     */
+    public function getSpeed() {
 		return $this->speed[$this->getOwner()];
 	}
 
-	public function updateMove() {
+    /**
+     *
+     */
+    public function updateMove() {
 		if($this->owner instanceof Player);
 		if($this->closeTarget instanceof Player);
 		if(is_null($this->closeTarget)) {
@@ -160,7 +194,11 @@ abstract class Pets extends Creature {
 		$this->updateMovement();
 	}
 
-	public function onUpdate($currentTick) {
+    /**
+     * @param $currentTick
+     * @return bool
+     */
+    public function onUpdate($currentTick) {
 		if(!($this->owner instanceof Player) or $this->owner->closed) {
 			$this->close();
 			return false;
@@ -180,7 +218,10 @@ abstract class Pets extends Creature {
 		return true;
 	}
 
-	public function returnToOwner() {
+    /**
+     *
+     */
+    public function returnToOwner() {
 		if($this->owner instanceof Player);
 		$len = rand(2, 6);
 		$x = (-sin(deg2rad( $this->owner->yaw))) * $len  +  $this->owner->getX();
@@ -190,39 +231,61 @@ abstract class Pets extends Creature {
 		$this->z = $z;
 	}
 
-	public function close() {
+    /**
+     *
+     */
+    public function close() {
 		parent::close();
 	}
 
-	public function kill() {
+    /**
+     *
+     */
+    public function kill() {
 		if($this->owner instanceof Player);
 		$this->owner->sendMessage($this->getName().TF::YELLOW." died!");
 		parent::kill();
 	}
 
-	public function setLastDamager($player) {
+    /**
+     * @param $player
+     */
+    public function setLastDamager($player) {
 		if($this->owner instanceof Player);
 		if (isset(Main::$pet[$this->owner->getName()])) {
 			$this->attacker[$this->getOwner()] = $player;
 		}
 	}
 
-	public function getLastDamager() {
+    /**
+     * @return mixed
+     */
+    public function getLastDamager() {
 		return $this->attacker[$this->getOwner()];
 	}
 
-	public static function getTimeInterval($started) {
+    /**
+     * @param $started
+     * @return float
+     */
+    public static function getTimeInterval($started) {
 		return round((strtotime(date('Y-m-d H:i:s')) - strtotime($started)) /60);
 	}
 
-	public function getNameTag() {
+    /**
+     * @return null
+     */
+    public function getNameTag() {
 		if($this->name == null) {
 			return $this->getName();
 		}
 		return $this->name;
 	}
 
-	public function setName($name) {
+    /**
+     * @param $name
+     */
+    public function setName($name) {
 		$this->name = $name;
 	}
 }

@@ -3,7 +3,7 @@ namespace LostTeam;
 
 use pocketmine\entity\Tameable;
 
-class WolfPet extends Pets implements Tameable{
+class WolfPet extends Pets implements Tameable {
 
 	const NETWORK_ID = 14;
 

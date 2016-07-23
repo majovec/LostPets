@@ -2,6 +2,7 @@
 namespace LostTeam;
 
 use pocketmine\entity\Creature;
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\AddEntityPacket;
@@ -21,7 +22,7 @@ abstract class Pets extends Creature {
      *
      */
     public function saveNBT() {
-
+        Entity::saveNBT();
 	}
 
     /**

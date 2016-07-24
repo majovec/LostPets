@@ -20,6 +20,7 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Player;
+
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use pocketmine\utils\TextFormat as TF;
@@ -40,6 +41,12 @@ class Main extends PluginBase implements Listener {
 //		Entity::registerEntity(BlockPet::class);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new PetsTick($this), 20*15); //run each minute for random pet messages
 		$this->getLogger()->notice(TF::GREEN."Enabled!");
+
+		if (!file_exists($this->getDataFolder() . "Config.yml")){
+			$this->saveDefaultConfig();
+		}
+
+		$this->messages = new PetMessages($this);
 	}
 	public function update() {
 		$this->saveResource("auto-update.yml");
@@ -257,6 +264,22 @@ class Main extends PluginBase implements Listener {
 		return null;
 	}
 
+	public function getConfigValue($key)
+	{
+		$value = $this->getConfig()->getNested($key);
+		if($value === null)
+		{
+			$this->getLogger()->warning("NULL", $key);
+			return null;
+		}
+		return $value;
+	}
+
+	public function getPetsVersion()
+	{
+		return $this->getDescription()->getVersion();
+	}
+	
 	public function onPlayerQuit(PlayerQuitEvent $event) {
 		$player = $event->getPlayer();
 		$pet = $this->getPet($player);

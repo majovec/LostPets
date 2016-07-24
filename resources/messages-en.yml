@@ -1,0 +1,16 @@
+
+# LostPets by @LostTeam
+
+---
+messages-version: "0.9.0"
+langauge: "en"
+
+commands:
+  pets:
+    usage: "/pets <SubCommand>"
+    description: "Primary Pets Command"
+    permission: pets.command
+  pet:
+    usage: "/pet <SubCommand>"
+    description: "Primary Pets Command"
+    permission: pets.command

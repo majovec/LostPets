@@ -1,0 +1,16 @@
+
+# LostPets by LostTeam
+
+---
+messages-version: "0.9.0"
+language: "ru"
+
+commands:
+  pets:
+  Применение: "/домашние питомцы <SubCommand>"
+    описание: "Первичные Животные Команды"
+    разрешение: pets.command
+  pet:
+    Применение: "/домашнее животное <SubCommand>"
+    описание: "Первичные Животные Команды"
+    разрешение: pets.command

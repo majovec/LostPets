@@ -25,8 +25,10 @@ use pocketmine\utils\Utils;
 use pocketmine\utils\TextFormat as TF;
 
 class Main extends PluginBase implements Listener {
-	public static $pet, $petState, $isPetChanging, $type;
-	public $pets, $petType, $wishPet, $current, $namehold = null, $users = array();
+
+    public static $pet, $petState, $isPetChanging, $type;
+
+    public $pets, $petType, $wishPet, $current, $namehold = null, $users = array();
 
     /**
      *

@@ -13,6 +13,6 @@ class EndermanPet extends Pets {
     }
 
     public function getSpeed() {
-        return 1.2;
+        return 1.8;
     }
 }

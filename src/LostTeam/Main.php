@@ -292,7 +292,7 @@ class Main extends PluginBase implements Listener {
 			$pet = $this->create($player,$type, $source);
 			return $pet;
 		}
-		$player->sendMessage(TF::RED."You can only have one pet! This may be a glitch...");
+		$player->sendMessage(TF::RED."You can only have one pet! This is a glitch!");
 		return null;
 	}
 
@@ -312,8 +312,9 @@ class Main extends PluginBase implements Listener {
      */
     public function onDeath(EntityDeathEvent $event) {
 		$entity = $event->getEntity();
-		$attackerEvent = $entity->getLastDamageCause();
-		if(!$entity instanceof Player and $entity instanceof Pets) {
+		$attacker = $entity->getLastDamageCause();
+		if($entity instanceof Pets) {
+			$entity->getOwner()->sendMessage("Your Pet, "$entity->getNameTag().", died from a(n) ".$attacker->getName()."!");
 			$this->disablePet($entity->getOwner());
 			return;
 		}
@@ -382,15 +383,11 @@ class Main extends PluginBase implements Listener {
 
     /**
      * @param Player $player
-     * @return mixed
+     * @return Pets
      */
-    public function getPet(Player $player) {
-		if(self::$pet instanceof Pets) {
-			return self::$pet[$player->getName()];
-		}else{
-			return self::$pet[$player->getName()];
-		}
-	}
+     public function getPet(Player $player) {
+     	return self::$pet[$player->getName()];
+     }
 
     /**
      * @param Player $player
@@ -422,17 +419,17 @@ class Main extends PluginBase implements Listener {
 			case "PET_RANDOM": //neutral messages that can be said anytime
 				$messages = array(
 					"I'm Hungry, do you have any food?",
-					"I'm gonna starve here... Please... Food",
-					"I smell steak in your pocket! Can I have one?",
-					"I will eat you if you don't feed me"
+					"I'm gonna starve here... Please... Food!",
+					"I smell food in your pocket! Can I have some?",
+					"I'm gonna eat you if you don't feed me!"
 				);
 				break;
 			default: //same as random messages
 				$messages = array(
-					"def1",
-					"def2",
-					"def3",
-					"def4"
+					"I'm Hungry, do you have any food?",
+					"I'm gonna starve here... Please... Food!",
+					"I smell food in your pocket! Can I have some?",
+					"I'm gonna eat you if you don't feed me!"
 				);
 				break;
 		}

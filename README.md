@@ -2,12 +2,14 @@
 [![Gitter](https://badges.gitter.im/LostTeam/Pets.svg)](https://gitter.im/LostTeam/Pets?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Build Status](http://74.141.54.178:8080/job/Pets%20Plugin/badge/icon)](http://74.141.54.178:8080/job/Pets%20Plugin/)
 ### Primary Test Server:
+#### IP: Offline
+#### Port: 19132
+##### NOTE: Offline right now to resolve potential security risks.
+### Secondary Test Server:
 ##### Ip: LostTester.ddns.net
 ##### Port: 19134
-###### NOTE: Usually inactive, may be used when jasonwynn10 is active
-### Beta test server (with minigames):
-##### IP: scpe.game-server.cc
-##### Port: 19132 (or 443 if using VPN)
+###### NOTE: Usually inactive, may be used when jasonwynn10 is active.
+
 ### Features
 - Pets follow their owners
 - Pets are interchangeable
